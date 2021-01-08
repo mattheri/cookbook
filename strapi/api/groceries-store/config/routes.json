@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/groceries-stores",
+      "handler": "groceries-store.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/groceries-stores/count",
+      "handler": "groceries-store.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/groceries-stores/:id",
+      "handler": "groceries-store.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/groceries-stores",
+      "handler": "groceries-store.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/groceries-stores/:id",
+      "handler": "groceries-store.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/groceries-stores/:id",
+      "handler": "groceries-store.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

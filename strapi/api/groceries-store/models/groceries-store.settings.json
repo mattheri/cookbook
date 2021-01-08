@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "groceries_stores",
+  "info": {
+    "name": "groceries_store"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "flyers": {
+      "via": "groceries_store",
+      "collection": "flyers"
+    }
+  }
+}

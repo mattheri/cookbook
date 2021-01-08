@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/flyers",
+      "handler": "flyers.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/flyers/count",
+      "handler": "flyers.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/flyers/:id",
+      "handler": "flyers.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/flyers",
+      "handler": "flyers.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/flyers/:id",
+      "handler": "flyers.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/flyers/:id",
+      "handler": "flyers.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

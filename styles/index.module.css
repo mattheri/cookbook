@@ -1,0 +1,12 @@
+.main {
+    margin-top: 6rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.h1 {
+    text-align: center;
+    margin: 0 auto;
+}

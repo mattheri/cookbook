@@ -1,0 +1,66 @@
+.wrapper {
+    width: fit-content;
+    position: relative;
+}
+
+.favorites {
+    max-width: 992px;
+    display: flex;
+    gap: 1rem;
+    overflow-x: scroll;
+    padding: 10px;
+    position: relative;
+}
+
+.favorites::-webkit-scrollbar {
+    display: none;
+}
+
+.right, .left {
+    position: absolute;
+    height: 100%;
+    background: rgb(255,255,255);
+    width: 3rem;
+    z-index: 9990;
+    transition: background-color .2s;
+    top: 0;
+    display: none;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+}
+
+.right:focus, .left:focus {
+    outline: none;
+}
+
+.left {
+    left: 0rem;
+    background: linear-gradient(90deg, rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%);
+}
+
+.left:hover {
+    background-color: white;
+}
+
+.right {
+    right: 0rem;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%);
+}
+
+.right:hover {
+    background-color: white;
+}
+
+.right div, .left div {
+    margin: auto;
+    display: block;
+    width: fit-content;
+    height: fit-content;
+}
+
+@media only screen and (min-width: 992px) {
+    .right, .left {
+        display: block;
+    }
+}
