@@ -31,21 +31,26 @@ export default function Home({ meals }: Props) {
   )
 }
 
+
 export const getStaticProps: GetStaticProps = async () => {
   const {
     Get,
     Create,
     Collection,
-    Documents
+    Documents,
+    Paginate,
+    Lambda,
+    Map
   } = fauna.query;
 
   const daily_meals = await client.query(
-    Get(
-      Documents(Collection("daily_meals"))
+    Map(
+      Paginate(Documents(Collection("daily_meals"))),
+      Lambda(index => Get(index))
     )
-  );
+  )
 
-  if (!daily_meals.hasOwnProperty("data")) {
+  if (!(daily_meals as any).data.length) {
     const { meals } = await (await axios.get("https://www.themealdb.com/api/json/v2/9973533/randomselection.php")).data;
 
     await client.query(
@@ -68,8 +73,9 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: {
-      meals: (daily_meals as any).data.meals
-    }
+      meals: (daily_meals as any).data[0].data.meals
+    },
+    revalidate: 1
   }
 
 }
