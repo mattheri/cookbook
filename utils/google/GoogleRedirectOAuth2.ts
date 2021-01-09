@@ -14,6 +14,8 @@ export const GoogleRedirectOAuth2 = async (req: NextApiRequest, res: NextApiResp
         include_granted_scopes: true
     }
 
+    console.log(googleParams);
+
     const oath2Endpoint = () => {
         const endpoint = [process.env.GOOGLE_OAUTH_ENDPOINT];
         const paramsArray = Object.entries(googleParams);
