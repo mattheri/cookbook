@@ -9,7 +9,7 @@ import { useUserSignIn } from "../Hooks/useUserSignIn";
 import { Google } from "../GoogleSignIn/Google";
 
 type Props = {
-    close: () => Promise<boolean>
+    close?: () => Promise<boolean>
 }
 
 export function Login({
