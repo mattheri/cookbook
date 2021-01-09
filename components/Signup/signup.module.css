@@ -3,7 +3,7 @@
     height: fit-content;
     display: flex;
     justify-content: center;
-    padding: 30px;
+    padding: 30px !important;
 }
 
 .form {
