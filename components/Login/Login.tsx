@@ -1,12 +1,13 @@
 import Link from "next/link";
 import React from "react";
-import { Button, SubmitButton } from "../Button/Button";
+import { Button, ModalButton, SubmitButton } from "../Button/Button";
 import { Close } from "../Close/Close";
 import { Container } from "../Container/Container";
 import { Input } from "../Input/Input";
 import styles from "./login.module.css";
 import { useUserSignIn } from "../Hooks/useUserSignIn";
 import { Google } from "../GoogleSignIn/Google";
+import { Facebook } from "../FacebookSignIn/Facebook";
 
 type Props = {
     close?: () => Promise<boolean>
@@ -166,12 +167,13 @@ export function Login({
             <hr className={styles.hr} />
             <div className={styles.socialIcons}>
                 <Google callback={handleSignIn} />
+                <Facebook />
             </div>
             <div className={styles.signup}>
                 <p>
                     Don't have an account?
                 </p>
-                <Link href="/signup"><a>Sign up</a></Link>
+                <ModalButton href="/signup" text="Sign Up" />
             </div>
         </Container>
     );

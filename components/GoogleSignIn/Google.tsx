@@ -22,18 +22,13 @@ export function Google({ callback }: Props) {
         const profile = await auth2.signIn();
 
         if (Object.keys(profile).length) {
-            console.log(profile);
-            console.log(profile.getBasicProfile().getName());
-
             const data = {
                 user: profile.getBasicProfile().getEmail(),
                 name: profile.getBasicProfile().getName(),
                 picture: profile.getBasicProfile().getImageUrl()
             }
             
-            const res = await (await axios.post("/api/auth/google", data)).data;
-            console.log(res);
-
+            const res = await (await axios.post("/api/auth/oAuth", data)).data;
             callback(res);
         }
     }

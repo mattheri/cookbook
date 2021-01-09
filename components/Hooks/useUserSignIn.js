@@ -2,7 +2,6 @@ import React from 'react';
 import { AppContext } from '../Context/AppContext';
 import { useCookies } from "react-cookie";
 import { useRouter } from 'next/router';
-import axios from 'axios';
 
 export function useUserSignIn() {
     const [ appContext, setAppContext ] = React.useContext(AppContext);
@@ -10,6 +9,8 @@ export function useUserSignIn() {
     const router = useRouter();
 
     function handleSignIn(data) {
+
+        console.log(data);
         setCookie("user", data, {
             path: "/",
             maxAge: 3600,

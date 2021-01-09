@@ -17,9 +17,12 @@ export function Modal({
     fullscreen,
     isOpen
 }: Props) {
+    const currentModalRoutes = [
+        "/login",
+        "/signup"
+    ];
     const { returnHref } = useContextualRouting();
     const router = useRouter();
-
     const close = () => router.push(returnHref);
     const modalRef = React.useRef<HTMLDivElement>(null);
 

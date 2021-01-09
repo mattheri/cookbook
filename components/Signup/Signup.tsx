@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import { Button, SubmitButton } from "../Button/Button";
+import { Button, ModalButton, SubmitButton } from "../Button/Button";
 import { Close } from "../Close/Close";
 import { Container } from "../Container/Container";
 import { AppContext } from "../Context/AppContext";
@@ -200,7 +200,7 @@ export function Signup(props) {
                 <p>
                     Already have an account?
                 </p>
-                <Link href="/login"><a>Sign in</a></Link>
+                <ModalButton href="/login" text="Sign In" />
             </div>
         </Container>
     );

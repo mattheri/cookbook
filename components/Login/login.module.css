@@ -23,9 +23,14 @@
 
 .socialIcons {
     display: flex;
-    height: 3rem;
-    gap: 5px;
+    flex-direction: column;
+    align-items: center;
+    height: fit-content;
     margin: 1rem 0;
+}
+
+.socialIcons > * {
+    margin: 5px;
 }
 
 .signup {
@@ -38,9 +43,4 @@
 
 .signup p {
     font-weight: bold;
-}
-
-.signup a {
-    font-weight: bold;
-    color: #FF9671;
 }
