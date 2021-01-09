@@ -1,7 +1,8 @@
-const fauna = require("faunadb");
-require("dotenv").config();
+import fauna from "faunadb";
 
 class Fauna {
+    secret: string;
+
     constructor() { 
         this.secret = process.env.FAUNA_DB_SECRET
     }

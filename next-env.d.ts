@@ -57,6 +57,8 @@ export interface Meal {
 }
 
 export interface dbResponse {
+    ref: any;
+    ts: string;
     data: {
         [key: string]: any
     }

@@ -18,10 +18,5 @@ export function useUserSignIn() {
         setAppContext(data);
     }
 
-    const handleOAuthSignIn = (data) => {
-        console.log(data);
-        router.push(data.url);
-    }
-
-    return { handleSignIn, handleOAuthSignIn, appContext };
+    return { handleSignIn, appContext };
 }

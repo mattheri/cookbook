@@ -6,26 +6,36 @@ import { useContextualRouting } from "next-use-contextual-routing";
 import { useRouter } from "next/router";
 import { useClickOutside } from "../Hooks/useClickOutside";
 
-export function Modal(props) {
+type Props = {
+    children: JSX.Element | JSX.Element[],
+    fullscreen: boolean,
+    isOpen: boolean
+}
+
+export function Modal({
+    children,
+    fullscreen,
+    isOpen
+}: Props) {
     const { returnHref } = useContextualRouting();
     const router = useRouter();
 
     const close = () => router.push(returnHref);
-    const modalRef = React.useRef(null);
+    const modalRef = React.useRef<HTMLDivElement>(null);
 
     const child = React.Children.map(
-        props.children,
-        child => React.cloneElement(child, { ...props, close })
-    )
+        children,
+        child => React.cloneElement(child, { ...child.props, close })
+    );
 
     useClickOutside(modalRef, close);
 
     return (
         <Portal>
-            {props.isOpen && 
+            {isOpen && 
             <section className={cn({
                 [styles.modal]: true,
-                [styles.full]: props.fullscreen
+                [styles.full]: fullscreen
             })}>
                 <div ref={modalRef}>
                     {child}
