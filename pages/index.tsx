@@ -67,7 +67,8 @@ export const getStaticProps: GetStaticProps = async () => {
     return {
       props: {
         meals
-      }
+      },
+      revalidate: 86400
     }
   }
 
@@ -75,7 +76,7 @@ export const getStaticProps: GetStaticProps = async () => {
     props: {
       meals: (daily_meals as any).data[0].data.meals
     },
-    revalidate: 1
+    revalidate: 86400
   }
 
 }
