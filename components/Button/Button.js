@@ -45,7 +45,7 @@ export function SubmitButton(props) {
                         headers: {
                             "Content-Type": "application/json"
                         },
-                        body: JSON.stringify({ ...data, api_key: process.env.API_KEY })
+                        body: JSON.stringify({ ...data })
                     })
                     console.log(res);
                     const json = await res.json();
