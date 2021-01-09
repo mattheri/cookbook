@@ -9,8 +9,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Parse the incoming URL and search for a hash. Otherwise, return false
     // If there is a hash, parse the URL to separate all params
-    const accessTokenResponse = req.url;
-    console.log(req);
+    const accessTokenResponse = req.body.access_token;
+    console.log(req.body);
 
     // Request the access token from Google
     if (!accessTokenResponse) {
@@ -27,13 +27,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         // const token = getValue("access_token");
 
-        // const data = await axios.get(process.env.GOOGLE_OAUTH_ENDPOINT, {
-        //     headers: {
-        //         "Bearer": accessTokenResponse
-        //     }
-        // });
+        const data = await axios.get(process.env.GOOGLE_OAUTH_ENDPOINT, {
+            headers: {
+                "Bearer": accessTokenResponse
+            }
+        });
 
-        // console.log(data);
-        // return res.send(JSON.stringify(data.data));
+        console.log(data);
+        return res.send(JSON.stringify({ connected: true, user: { ...data.data }}));
     }
 }
