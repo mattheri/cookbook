@@ -55,3 +55,9 @@ export interface Meal {
     strTags: string;
     strYoutube: string;
 }
+
+export interface dbResponse {
+    data: {
+        [key: string]: any
+    }
+}

@@ -1,6 +1,4 @@
-import { client, fauna } from "../../../utils/db/Fauna";
 import type { NextApiRequest, NextApiResponse } from 'next';
-import axios from "axios";
 import { withInitMiddleWare } from "../../../utils/withInitMiddleware";
 import { GoogleRedirectOAuth2 } from "../../../utils/google/GoogleRedirectOAuth2";
 
