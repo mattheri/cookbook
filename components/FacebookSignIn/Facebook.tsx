@@ -27,7 +27,6 @@ export function Facebook() {
 
     return (
         <>
-            <div id="fb-root"></div>
             <a className={styles.facebook} onClick={async () => {
                 FB.login(response => {
                     if (response.authResponse) {
