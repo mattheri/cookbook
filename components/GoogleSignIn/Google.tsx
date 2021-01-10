@@ -1,4 +1,5 @@
 import axios from "axios";
+import styles from "./google.module.css";
 
 type Props = {
     callback: (data: any) => void
@@ -34,6 +35,6 @@ export function Google({ callback }: Props) {
     }
 
     return (
-        <div className="g-signin2" id="google-signin-button" onClick={() => handleGoogleSignIn()}></div>
+        <a className={styles.google} onClick={() => handleGoogleSignIn()}><img src="/uploads/images/google_icon.png" />Sign in with Google</a>
     )
 }
