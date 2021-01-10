@@ -41,15 +41,17 @@ export function ProfilePopup({ id }: Props) {
             contentStyle={{
                 display: "flex",
                 flexDirection: "column",
+                width: "fit-content",
+                padding: "1rem",
                 zIndex: 10000
             }}
             trigger={
-                <a className={styles.profilebtn}>
+                <div className={styles.profilebtn}>
                     {user.username && user.picture ? <img src={user.picture} /> : user.username.substring(0, 1).toUpperCase()}
-                </a>
+                </div>
             }
             mouseLeaveDelay={300}
-            position="bottom left">
+            position="bottom center">
             <Link href={`/profile/${id}`}><a className={styles.profile}>Profile</a></Link>
             <a className={styles.logout} onClick={handleLogOut}>Logout</a>
         </Popup>

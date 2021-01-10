@@ -16,7 +16,7 @@ export default function Home({ meals }: Props) {
   const [ appState ] = React.useContext(AppContext);
   return (
     <main className={styles.main}>
-      <Container styles="gap: 2rem">
+      <Container style="gap: 2rem">
         <h1 className={styles.h1}>You can search for the perfect recipe ☝</h1>
         {appState.connected && 
           <>        

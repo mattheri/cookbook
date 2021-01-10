@@ -10,7 +10,7 @@ type Props = {
 
 export default function RecipePage({ meals }: Props) {
     return (
-        <Container styles="margin-top: 4rem">
+        <Container style="margin-top: 4rem">
             {meals && <Recipe meal={meals} />}
         </Container>
     );
