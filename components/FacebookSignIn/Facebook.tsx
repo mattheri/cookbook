@@ -30,17 +30,19 @@ export function Facebook() {
     return (
         <>
             <a className={styles.facebook} onClick={async () => {
-                FB.login(response => {
+                FB.login(async (response) => {
                     if (response.authResponse) {
                         console.log(response.authResponse);
-                        FB.api("/me", response => {
+
+                        const inspectToken = await axios.get(`https://graph.facebook.com/v9.0/oauth/access_token?client_id=${}`)
+                        FB.api("/me", { fields: "email, name, picture" }, (response) => {
                             console.log(response);
                         })
 
-                        handleFindOrCreateUser(response.authResponse);
+                        // handleFindOrCreateUser(response.authResponse);
                     }
                 }, {
-                    scope: "email, name, picture"
+                    scope: "public_profile,name,email"
                 });
             }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-facebook" viewBox="0 0 16 16">
