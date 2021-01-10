@@ -33,8 +33,6 @@ export function Facebook() {
                 FB.login(async (response) => {
                     if (response.authResponse) {
                         console.log(response.authResponse);
-
-                        const inspectToken = await axios.get(`https://graph.facebook.com/v9.0/oauth/access_token?client_id=${}`)
                         FB.api("/me", { fields: "email, name, picture" }, (response) => {
                             console.log(response);
                         })
