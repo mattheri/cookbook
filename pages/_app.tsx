@@ -20,7 +20,7 @@ function MyApp({ Component, pageProps }) {
       <Head>
         <script src="https://apis.google.com/js/platform.js" async defer></script>
         <meta name="google-signin-client_id" content="661449334056-gt1ss0r05bl8m94s54lo0jlv6p0mg7gf.apps.googleusercontent.com"></meta>
-        <script async defer crossOrigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+        {/* <script async defer crossOrigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script> */}
       </Head>
       <CookiesProvider>
         <AppContextProvider>

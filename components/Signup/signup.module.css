@@ -23,9 +23,13 @@
 
 .socialIcons {
     display: flex;
-    height: 3rem;
-    gap: 5px;
+    flex-direction: column;
+    height: fit-content;
     margin: 1rem 0;
+}
+
+.socialIcons > * {
+    margin: 5px;
 }
 
 .login {

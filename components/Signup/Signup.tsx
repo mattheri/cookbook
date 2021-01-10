@@ -8,6 +8,7 @@ import { Google } from "../GoogleSignIn/Google";
 import { Input } from "../Input/Input";
 import styles from "./signup.module.css";
 import { useUserSignIn } from "../Hooks/useUserSignIn";
+import { Facebook } from "../FacebookSignIn/Facebook";
 
 export function Signup(props) {
     const [username, setUsername] = React.useState("");
@@ -195,6 +196,7 @@ export function Signup(props) {
             <hr className={styles.hr} />
             <div className={styles.socialIcons}>
                 <Google callback={handleSignIn} />
+                <Facebook />
             </div>
             <div className={styles.login}>
                 <p>
