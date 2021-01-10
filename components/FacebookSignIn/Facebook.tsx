@@ -9,13 +9,6 @@ export function Facebook() {
 
     const { handleSignIn } = useUserSignIn();
 
-    FB.init({
-        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID,
-        cookie: true,
-        xfbml: true,
-        version: 'v9.0'
-    });
-
     const handleFindOrCreateUser = async (data: any) => {
         const params = {
             username: data.email,
@@ -32,6 +25,12 @@ export function Facebook() {
             {/* <script async defer crossOrigin="anonymous" src="https://connect.facebook.net/fr_CA/sdk.js#xfbml=1&version=v9.0&appId=224542522593355" nonce="ofVoqfPq"></script> */}
             <div id="fb-root"></div>
             <a className={styles.facebook} onClick={() => {
+                FB.init({
+                    appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID,
+                    cookie: true,
+                    xfbml: true,
+                    version: 'v9.0'
+                });
                 FB.login(response => {
                     if (response.authResponse) {
                         console.log(response.authResponse);
