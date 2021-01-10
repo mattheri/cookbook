@@ -1,11 +1,28 @@
 .profilebtn {
     width: 3rem;
     height: 3rem;
-    background-color: blue;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    font-weight: 800;
+    font-size: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.menu {
-    background-color: blue;
-    width: 10rem;
-    height: 10rem;
+.profilebtn img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.profile {
+    margin-bottom: 5px;
+}
+
+.logout {
+    cursor: pointer;
+    width: 100%;
 }
