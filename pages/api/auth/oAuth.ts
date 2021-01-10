@@ -2,6 +2,7 @@ import { client, fauna } from "../../../utils/db/Fauna";
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withInitMiddleWare } from "../../../utils/withInitMiddleware";
 import { dbResponse } from "../../../next-env";
+import { v4 as uuid } from "uuid";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     await withInitMiddleWare(req, res);
@@ -16,7 +17,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         Collection,
         Replace,
         Exists,
-        Ref,
         Let,
         If,
         Var
@@ -45,6 +45,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     Collection("users"),
                     {
                         data: {
+                            id: uuid().replace(/-+/g, ""),
                             username,
                             name,
                             picture
@@ -71,9 +72,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             )
         )
 
-        return res.send(JSON.stringify({ connected: true, user: updatedUser.data.username }));
+        return res.send(JSON.stringify({ connected: true, user: { username: updatedUser.data.username, id: updatedUser.data.id } }));
     }
 
 
-    return res.send(JSON.stringify({ connected: true, user: dbUser.data.username }));
+    return res.send(JSON.stringify({ connected: true, user: { username: dbUser.data.username, id: dbUser.data.id } }));
 }

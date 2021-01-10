@@ -26,6 +26,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     if (!await matchPassword(password, user.data.hash)) {
         return res.send(JSON.stringify({ connected: false, user: {} }));
     } else {
-        return res.send(JSON.stringify({ connected: true, user: user.data.username }));
+        return res.send(JSON.stringify({ connected: true, user: { username: user.data.username, id: user.data.id } }));
     }
 }

@@ -1,6 +1,7 @@
 import { hashPassword } from "../../../utils/managePassword";
 import { client, fauna } from "../../../utils/db/Fauna";
 import { dbResponse } from "../../../next-env";
+import { v4 as uuid, v4 } from "uuid";
 
 export default async (req, res) => {
     const { body: { username, password } } = req;
@@ -12,10 +13,12 @@ export default async (req, res) => {
         Collection,
     } = fauna.query;
 
-    const doc: dbResponse = await client.query(
+    const user: dbResponse = await client.query(
         Create(
             Collection("users"),
-            { data: {
+            {
+                data: {
+                    id: uuid().replace(/-+/g, ""),
                     username,
                     hash
                 }
@@ -23,5 +26,5 @@ export default async (req, res) => {
         )
     )
 
-    res.send(JSON.stringify({ connected: true, user: doc.data.username }));
+    res.send(JSON.stringify({ connected: true, user: { username: user.data.username, id: user.data.id } }));
 }

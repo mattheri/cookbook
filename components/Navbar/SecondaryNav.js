@@ -7,6 +7,7 @@ import { Button, FnButton, ModalButton } from "../Button/Button";
 import styles from "./secondary.module.css";
 import { AppContext } from "../Context/AppContext";
 import { useUserLogOut } from "../Hooks/useUserLogOut";
+import { ProfileButton } from "../ProfileButton/ProfileButton";
 
 export function SecondaryNav(props) {
     const [filters] = props.filters;
@@ -29,6 +30,7 @@ export function SecondaryNav(props) {
             </div>
             <Search activeFilter={filters} />
             <ul className={styles.desktopMenu}>
+                {appState.connected && <ProfileButton id={appState.user.id} />}
                 {appState.connected && <FnButton onClick={handleLogOut} text="Log Out" />}
                 {!appState.connected && <ModalButton href="/login" text="Log In" />}
                 {!appState.connected && <ModalButton href="/signup" text="Sign Up" />}

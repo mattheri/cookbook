@@ -8,6 +8,7 @@ export function AppContextProvider<T>(props: React.PropsWithChildren<T>) {
     const user = useGetAuthCookie();
 
     const [appState, setAppState] = React.useState({
+        id: user ? user.id : "",
         connected: user ? user.connected : false,
         user: user ? user.user : {}
     });

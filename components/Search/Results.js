@@ -3,6 +3,7 @@ import styles from "./result.module.css";
 import Link from "next/link";
 import { useClickOutside } from "../Hooks/useClickOutside";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 export const Results = React.forwardRef((props, ref) => {
 
@@ -29,7 +30,7 @@ export const Results = React.forwardRef((props, ref) => {
                         }}>
                             <a tabIndex={index + 1} onClick={() => setShow(false)}>
                                 <article className={styles.result}>
-                                    <img src={`${result.strMealThumb}/preview`} />
+                                    <Image src={`${result.strMealThumb}/preview`} height={50} width={50} layout="intrinsic" />
                                     <p>{result.strMeal}</p>
                                 </article>
                             </a>
