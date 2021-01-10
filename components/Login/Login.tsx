@@ -167,7 +167,7 @@ export function Login({
             <hr className={styles.hr} />
             <div className={styles.socialIcons}>
                 <Google callback={handleSignIn} />
-                <Facebook />
+                <Facebook callback={handleSignIn} />
             </div>
             <div className={styles.signup}>
                 <p>

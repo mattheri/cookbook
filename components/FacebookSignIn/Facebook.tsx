@@ -1,11 +1,12 @@
 import axios from "axios";
-import { useUserSignIn } from "../Hooks/useUserSignIn";
 import styles from "./facebook.module.css";
 import React from "react";
 
-export function Facebook() {
+type Props = {
+    callback: (data: any) => void;
+}
 
-    const { handleSignIn } = useUserSignIn();
+export function Facebook({ callback }: Props) {
 
     FB.init({
         appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID,
@@ -13,8 +14,6 @@ export function Facebook() {
         xfbml: true,
         version: 'v9.0'
     });
-
-    console.log(process.env.NEXT_PUBLIC_FACEBOOK_APP_ID);
 
     const handleFindOrCreateUser = async (data: any) => {
         const params = {
@@ -24,7 +23,7 @@ export function Facebook() {
         }
 
         const res = await (await axios.post("/api/auth/oAuth", params)).data;
-        handleSignIn(res);
+        callback(res);
     }
 
     return (
@@ -32,12 +31,10 @@ export function Facebook() {
             <a className={styles.facebook} onClick={async () => {
                 FB.login(async (response) => {
                     if (response.authResponse) {
-                        console.log(response.authResponse);
-                        FB.api("/me", { fields: "email, name, picture" }, (response) => {
-                            console.log(response);
+                        FB.api("/me", { fields: "email, name, picture" }, (response: any) => {
+                            handleFindOrCreateUser(response);
                         })
 
-                        // handleFindOrCreateUser(response.authResponse);
                     }
                 }, {
                     scope: "public_profile,name,email"
@@ -50,18 +47,4 @@ export function Facebook() {
             </a>
         </>
     );
-    // return (
-    //     <FacebookLogin
-    //         appId={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID}
-    //         callback={handleFindOrCreateUser}
-    //         scope={"email,public_profile"}
-    //         textButton="Continue with Facebook"
-    //         fields="name, email, picture"
-    //         icon="fa-facebook"
-    //         cssClass={styles.facebook}
-    //         isDisabled={false}
-    //     />
-    // );
-
-
 }

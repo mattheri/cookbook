@@ -24,7 +24,7 @@ export function Google({ callback }: Props) {
 
         if (Object.keys(profile).length) {
             const data = {
-                user: profile.getBasicProfile().getEmail(),
+                username: profile.getBasicProfile().getEmail(),
                 name: profile.getBasicProfile().getName(),
                 picture: profile.getBasicProfile().getImageUrl()
             }
