@@ -14,6 +14,8 @@ export function Facebook() {
         version: 'v9.0'
     });
 
+    console.log(process.env.NEXT_PUBLIC_FACEBOOK_APP_ID);
+
     const handleFindOrCreateUser = async (data: any) => {
         const params = {
             username: data.email,
