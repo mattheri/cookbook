@@ -1,0 +1,21 @@
+{
+  "storage": "Storage",
+  "actionLabel": "Actions",
+  "actions": {
+    "create": "Create new storage",
+    "deleteWithName": "Delete {{name}}",
+    "edit": "Edit storage",
+    "add": "Add",
+    "cancel": "Cancel",
+    "editWithName": "Edit {{name}}"
+  },
+  "form": {
+    "errors": {
+      "required": "This field is required",
+      "maxlength": "There is a maximum of {{chars}} characters for this field"
+    },
+    "labels": {
+      "name": "Name"
+    }
+  }
+}

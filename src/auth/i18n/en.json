@@ -1,0 +1,19 @@
+{
+  "redirecting": "Redirecting to login...",
+  "signup": "Sign Up",
+  "signin": "Sign In",
+  "signout": "Sign Out",
+  "labels": {
+    "username": "Username",
+    "password": "Password",
+    "google": "Connect with Google",
+    "or": "Or",
+    "passwordVerification": "Re-type password"
+  },
+  "errors": {
+    "email": "Please enter a valid email",
+    "password": "Please enter a valid password",
+    "required": "This field is required",
+    "nomatch": "Password must match"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "profile": "Profile",
+  "aria": {
+    "menuOpen": "Open Menu"
+  },
+  "addImage": "Add Image",
+  "inputs": {
+    "errors": {
+      "file": {
+        "invalidFile": "File type is not valid. Please use {{type}}"
+      }
+    }
+  }
+}
