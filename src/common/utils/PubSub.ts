@@ -4,8 +4,6 @@ import { injectable } from "inversify";
 type Callback = (...args: any[]) => any | Promise<any>;
 type Callbacks = Record<string, Set<Callback>>;
 type Unsubscribe = () => void;
-const ASYNC_FUNCTION_SYMBOL = "AsyncFunction";
-type FunctionWithSymbol = { [x: symbol]: string };
 
 @injectable()
 class Pubsub<T> {
@@ -33,12 +31,7 @@ class Pubsub<T> {
   publish(event: T, ...args: any[]) {
     const ev = event as unknown as string;
     this.callbacks[ev]?.forEach(async (cb) => {
-      const tempCb = cb as unknown as FunctionWithSymbol;
-      const functionType: string = tempCb[Symbol.toStringTag];
-
-      if (functionType.includes(ASYNC_FUNCTION_SYMBOL))
-        await cb.apply(cb, args);
-      else cb.apply(cb, args);
+      await cb.apply(cb, args);
     });
   }
 }
