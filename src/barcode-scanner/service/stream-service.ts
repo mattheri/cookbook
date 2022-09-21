@@ -118,6 +118,7 @@ class StreamService {
         video.height = height;
         video.srcObject = this.cameraService.stream;
         video.id = this.videoId;
+        video.setAttribute("playsinline", "");
         video.play();
         if (this.canvas) this.append(this.canvas, video);
       }
