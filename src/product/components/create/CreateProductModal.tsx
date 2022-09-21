@@ -12,7 +12,9 @@ import useModal from "common/components/modals/hooks/UseModal";
 import Modal from "common/components/modals/Modal";
 import { CreateProductModalId } from "common/constants/constants";
 import CreateProductForm from "./CreateProductForm";
-import Scanner from "./Scanner";
+import PickProductForm from "./PickProductForm";
+import Scanner from "barcode-scanner/components/Scanner";
+import SlidingScreen from "common/components/sliding-screen/SlidingScreen";
 
 const initialValues = {
   storage: "",
@@ -29,37 +31,34 @@ const CreateProductModal = () => {
   const { close } = useModal(CreateProductModalId);
 
   return (
-    <Modal id={CreateProductModalId}>
-      <Modal.Header>Add product</Modal.Header>
+    <SlidingScreen id={CreateProductModalId}>
       <Form
         initialValues={initialValues}
         onSubmit={(values) => console.log(values)}
       >
-        <Modal.Body>
-          <Tabs isFitted variant="enclosed" isLazy>
-            <TabList>
-              <Tab>Pick</Tab>
-              <Tab>Create</Tab>
-              <Tab>Scan</Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel>one</TabPanel>
-              <TabPanel>
-                <CreateProductForm />
-              </TabPanel>
-              <TabPanel>
-                <Scanner />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button colorScheme="red" onClick={close}>
-            Cancel
-          </Button>
-        </Modal.Footer>
+        <Tabs isFitted variant="enclosed" isLazy>
+          <TabList>
+            <Tab>Pick</Tab>
+            <Tab>Create</Tab>
+            <Tab>Scan</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <PickProductForm />
+            </TabPanel>
+            <TabPanel>
+              <CreateProductForm />
+            </TabPanel>
+            <TabPanel>
+              <Scanner />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+        <Button colorScheme="red" onClick={close}>
+          Cancel
+        </Button>
       </Form>
-    </Modal>
+    </SlidingScreen>
   );
 };
 

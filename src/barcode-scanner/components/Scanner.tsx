@@ -1,24 +1,31 @@
 import { Box, Button, Spinner, VStack } from "@chakra-ui/react";
 import useInjection from "common/hooks/UseInjection";
-import { Product } from "product/product";
-import BarcodeReaderService from "product/service/barcode-reader-service";
+import BarcodeScannerService from "barcode-scanner/service/barcode-scanner-service";
 import BarcodeService from "product/service/barcode-service";
-import { useCallback, useEffect, useRef, useState } from "react";
-import "./Scanner.css";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 const Scanner = () => {
-  const [isScanning, setIsScanning] = useState(false);
+  const [isScanning, setIsScanning] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState<Product[] | null>(null);
+  const [products, setProducts] = useState<any[] | null>(null);
   const [isOnFormStep, setIsOnFormStep] = useState(false);
   const [dimensions, setDimensions] = useState({ w: 0, h: 0 });
-  const barcodeReader = useInjection(BarcodeReaderService);
+  const [containerBoundingRect, setContainerBounding] = useState({
+    width: 0,
+    height: 0,
+  });
+  const barcodeReader = useInjection(BarcodeScannerService);
   const barcodeService = useInjection(BarcodeService);
   const ref = useRef<HTMLDivElement>(null);
 
   const queryUpc = useCallback(
     async (code: string) => {
-      console.log(code);
       const product = await barcodeService.getProduct(code);
       setProducts([...(products || []), product]);
       setIsScanning(false);
@@ -39,51 +46,37 @@ const Scanner = () => {
     setIsOnFormStep(true);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!ref.current) return;
 
     const rect = ref.current.getBoundingClientRect();
 
-    if (dimensions.w === 0 || dimensions.h === 0) {
-      setDimensions({
-        w: rect.width,
-        h: rect.height,
-      });
+    if (!rect.height) return;
 
-      return;
-    }
-
-    barcodeReader.init({
-      target: ref.current,
-      onDetectCallback: queryUpc,
-      constraints: {
-        height: dimensions.h,
-        width: dimensions.w,
-      },
-      onInitCallback: onInit,
+    setDimensions({
+      h: rect.height,
+      w: rect.width,
     });
 
-    return () => {
-      barcodeReader.stop();
-    };
-  }, [ref, dimensions.w, dimensions.h, dimensions, barcodeReader]);
+    barcodeReader.read();
+
+    return () => barcodeReader.stop();
+  }, [ref]);
 
   return (
-    <VStack>
+    <VStack minH="100%">
       <Box
         ref={ref}
         w="100%"
-        minH="300px"
+        maxW="calc(100vw - 2rem)"
         pos="relative"
         display={isLoading ? "grid" : "block"}
         placeItems="center"
       >
-        {isLoading ? (
-          <Spinner />
-        ) : (
+        {dimensions.h && (
           <canvas
+            id="stream-data"
             style={{
-              position: "absolute",
               left: "0px",
               height: `${dimensions.h}px`,
               width: `${dimensions.w}px`,

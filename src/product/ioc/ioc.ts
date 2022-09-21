@@ -1,20 +1,14 @@
 import { ContainerModule } from "inversify";
 import BarcodeService from "product/service/barcode-service";
+import IngredientParserService from "product/service/ingredient-parser-service";
+import ProductAdapter from "product/service/product-adapter";
 import ProductService from "product/service/product-service";
-import CameraService from "product/service/camera-service";
-import BarcodeAdapter from "product/service/barcode-adapter";
-import BarcodeReaderService from "product/service/barcode-reader-service";
-import BarcodeValidator from "product/service/barcode-validator";
-import BarcodeServiceConfig from "product/service/barcode-service-config";
 
 const productIoC = new ContainerModule((bind) => {
   bind(BarcodeService).toSelf();
+  bind(ProductAdapter).toSelf();
   bind(ProductService).toSelf();
-  bind(CameraService).toSelf();
-  bind(BarcodeAdapter).toSelf();
-  bind(BarcodeReaderService).toSelf();
-  bind(BarcodeValidator).toSelf();
-  bind(BarcodeServiceConfig).toSelf();
+  bind(IngredientParserService).toSelf();
 });
 
 export default productIoC;

@@ -4,6 +4,7 @@ import MainLayout from "common/components/MainLayout";
 import SuspenseWithLoading from "common/components/SuspenseWithLoading";
 import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
+import RecipeLayout from "recipes/components/RecipeLayout";
 import StorageLayout from "storage/components/StorageLayout";
 import routes from "./routes";
 
@@ -54,12 +55,18 @@ const Router = () => {
         <Route element={<AppLayout />}>
           <Route element={<StorageLayout />}>
             <Route
-              path={routes.storage}
+              path={routes.storage.main}
               element={
                 <SuspenseWithLoading>
                   <StoragesPage />
                 </SuspenseWithLoading>
               }
+            />
+          </Route>
+          <Route element={<RecipeLayout />}>
+            <Route
+              path={routes.recipes.main}
+              element={<SuspenseWithLoading></SuspenseWithLoading>}
             />
           </Route>
         </Route>

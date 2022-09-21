@@ -6,11 +6,12 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  ModalProps as MProps,
 } from "@chakra-ui/react";
 import { PropsWithChildren, FC, useState, useContext, useEffect } from "react";
 import ModalContext from "./context/ModalContext";
 
-export interface ModalProps {
+export interface ModalProps extends Omit<MProps, "isOpen" | "onClose"> {
   id: string;
 }
 
@@ -25,7 +26,7 @@ const Header: FC<PropsWithChildren> = ({ children }) => {
 
 interface Props extends PropsWithChildren<ModalProps> {}
 
-const Modal: FC<Props> = ({ id, children }) => {
+const Modal: FC<Props> = ({ id, children, ...props }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { isCurrentlyOpen, close, provideContext } = useContext(ModalContext);
 
@@ -43,7 +44,7 @@ const Modal: FC<Props> = ({ id, children }) => {
   }, []);
 
   return (
-    <MODAL isOpen={isOpen} onClose={onClose}>
+    <MODAL isOpen={isOpen} onClose={onClose} {...props}>
       <ModalOverlay />
       <ModalContent>{children}</ModalContent>
     </MODAL>

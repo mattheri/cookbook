@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script src="./zbar.wasm" defer type="application/wasm"></script>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -39,5 +40,34 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script id="drawImage-vertex-shader" type="x-shader/x-vertex">
+      attribute vec4 a_position;
+      attribute vec2 a_texcoord;
+
+      uniform mat4 u_matrix;
+
+      varying vec2 v_texcoord;
+
+      void main() {
+         gl_Position = u_matrix * a_position;
+         v_texcoord = a_texcoord;
+      }
+    </script>
+    <!-- https://gist.github.com/Volcanoscar/4a9500d240497d3c0228f663593d167a -->
+    <script id="drawImage-fragment-shader" type="x-shader/x-fragment">
+      precision mediump float;
+
+      varying vec2 v_texcoord;
+
+      uniform sampler2D u_texture;
+      uniform float u_colorFactor;
+
+      void main() {
+        vec4 sample =  texture2D(u_texture, v_texcoord);
+      	float grey = 0.21 * sample.r + 0.71 * sample.g + 0.07 * sample.b;
+        gl_FragColor = vec4(sample.r * u_colorFactor + grey * (1.0 - u_colorFactor), sample.g * u_colorFactor + grey * (1.0 - u_colorFactor), sample.b * u_colorFactor + grey * (1.0 - u_colorFactor), 1.0);
+      }
+    </script>
+    <script src="./webgl-utils.js"></script>
   </body>
 </html>
