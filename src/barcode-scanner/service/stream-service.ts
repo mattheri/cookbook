@@ -42,8 +42,8 @@ class StreamService {
 
     if (!this.video) return;
 
-    this.width = this.video.videoWidth;
-    this.height = this.video.videoHeight;
+    this.width = this.video.videoWidth || rect.width;
+    this.height = this.video.videoHeight || rect.height;
 
     this.video.addEventListener(
       "play",
@@ -84,7 +84,6 @@ class StreamService {
       }
       this.ctx.closePath();
       this.ctx.stroke();
-      this.ctx.fillText("#" + i, points[0].x, points[0].y - 10);
     }
   }
 

@@ -69,6 +69,7 @@ const Scanner = () => {
         ref={ref}
         w="100%"
         maxW="calc(100vw - 2rem)"
+        h="calc(100vh - 10rem)"
         pos="relative"
         display={isLoading ? "grid" : "block"}
         placeItems="center"
@@ -80,6 +81,7 @@ const Scanner = () => {
               left: "0px",
               height: `${dimensions.h}px`,
               width: `${dimensions.w}px`,
+              position: "absolute",
             }}
             width={dimensions.w}
             height={dimensions.h}
