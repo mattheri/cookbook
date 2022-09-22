@@ -69,7 +69,7 @@ const Scanner = () => {
         ref={ref}
         w="100%"
         maxW="calc(100vw - 2rem)"
-        h="calc(100vh - 10rem)"
+        h="calc(100vh - 15rem)"
         pos="relative"
         display={isLoading ? "grid" : "block"}
         placeItems="center"

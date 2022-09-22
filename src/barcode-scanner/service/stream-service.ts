@@ -115,6 +115,8 @@ class StreamService {
         video = document.createElement("video");
         video.width = width;
         video.height = height;
+        video.style.height = `${height}px`;
+        video.style.width = `${width}px`;
         video.srcObject = this.cameraService.stream;
         video.id = this.videoId;
         video.setAttribute("playsinline", "");
