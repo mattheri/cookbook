@@ -36,6 +36,8 @@ class BarcodeService {
       headers: this.headers,
     });
 
+    console.log(response.data);
+
     return this.productAdapter.productDbToClientProduct(response.data);
   }
 }

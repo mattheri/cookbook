@@ -9,42 +9,18 @@ const DEFAULT_ERROR_THRESHOLD = 0.25;
 
 @injectable()
 class BarcodeAdapter {
-  private _defaultErrorThreshold = DEFAULT_ERROR_THRESHOLD;
+  toGrayScale(image: ImageData, ctx: CanvasRenderingContext2D) {
+    const pixels = image.data;
 
-  get defaultErrorThreshold() {
-    return this._defaultErrorThreshold;
-  }
-
-  set defaultErrorThreshold(threshold: number) {
-    this._defaultErrorThreshold = threshold;
-  }
-
-  getMedian(array: number[]) {
-    array.sort((a, b) => a - b);
-    const half = Math.floor(array.length / 2);
-
-    if (array.length % 2 === 1) {
-      return array[half];
+    for (let i = 0; i < pixels.length; i += 4) {
+      const ligntness =
+        0.2126 * pixels[i] + 0.715 * pixels[i + 1] + 0.0722 * pixels[i + 2];
+      pixels[i] = ligntness;
+      pixels[i + 1] = ligntness;
+      pixels[i + 2] = ligntness;
     }
 
-    return array[half - 1] + array[half] / 2;
-  }
-
-  getMedianOfErrorCodes(decodedCodes: QuaggaJSDecodedCode[]) {
-    const errors = decodedCodes
-      .filter((code) => code.error !== undefined)
-      .map((code) => code.error) as number[];
-    const median = this.getMedian(errors);
-
-    return median;
-  }
-
-  getErrors(result: QuaggaJSResultObject) {
-    const error = this.getMedianOfErrorCodes(result.codeResult.decodedCodes);
-
-    if (error < this.defaultErrorThreshold) return result.codeResult.code;
-
-    return null;
+    ctx.putImageData(image, 0, 0);
   }
 
   validateBarcode(code: string) {

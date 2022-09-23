@@ -26,9 +26,11 @@ const Scanner = () => {
 
   const queryUpc = useCallback(
     async (code: string) => {
-      const product = await barcodeService.getProduct(code);
-      setProducts([...(products || []), product]);
-      setIsScanning(false);
+      barcodeReader.pauseRead();
+      console.log(code);
+      // const product = await barcodeService.getProduct(code);
+      // setProducts([...(products || []), product]);
+      // setIsScanning(false);
     },
     [barcodeService]
   );
@@ -62,6 +64,10 @@ const Scanner = () => {
 
     return () => barcodeReader.stop();
   }, [ref]);
+
+  useEffect(() => {
+    barcodeReader.onBarcodeRead(queryUpc);
+  }, [barcodeReader]);
 
   return (
     <VStack minH="100%">

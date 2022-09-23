@@ -1,13 +1,24 @@
 import { inject, injectable } from "inversify";
-import { scanImageData } from "@undecaf/zbar-wasm";
-import BarcodeValidator from "./barcode-validator";
+import {
+  scanImageData,
+  getDefaultScanner,
+  ZBarImage,
+  ZBarConfigType,
+  ZBarOrientation,
+} from "@undecaf/zbar-wasm";
 import StreamService from "./stream-service";
+import Pubsub from "common/utils/PubSub";
+import BarcodeAdapter from "./barcode-adapter";
+
+export enum BarcodeScannerEvents {
+  BARCODE_SCAN = "BARCODE_SCAN",
+}
 
 @injectable()
 class BarcodeScannerService {
-  @inject(BarcodeValidator)
-  private readonly barcodeValidator!: BarcodeValidator;
+  @inject(BarcodeAdapter) private readonly barcodeAdapter!: BarcodeAdapter;
   @inject(StreamService) private readonly streamService!: StreamService;
+  @inject(Pubsub) private readonly pubsub!: Pubsub<BarcodeScannerEvents>;
 
   timeout: NodeJS.Timeout | null = null;
   scanning = true;
@@ -35,20 +46,19 @@ class BarcodeScannerService {
     )
       return;
 
-    const res = await scanImageData(
-      this.streamService.ctx.getImageData(
-        0,
-        0,
-        this.streamService.width,
-        this.streamService.height
-      )
+    const imageData = this.streamService.ctx.getImageData(
+      0,
+      0,
+      this.streamService.width,
+      this.streamService.height
     );
+    const res = await scanImageData(imageData);
 
     if (res.length) {
       this.streamService.debugRender(res);
       const code = res[0].decode();
-      if (this.barcodeValidator.validate(code)) {
-        console.log(code);
+      if (this.barcodeAdapter.validateBarcode(code)) {
+        this.pubsub.publish(BarcodeScannerEvents.BARCODE_SCAN, code);
       }
     }
 
@@ -65,8 +75,16 @@ class BarcodeScannerService {
     }, this.scanInterval);
   }
 
-  destroySelf() {
+  private destroySelf() {
     if (this.timeout) clearTimeout(this.timeout);
+  }
+
+  onBarcodeRead(callback: (code: any) => any) {
+    this.pubsub.subscribe(BarcodeScannerEvents.BARCODE_SCAN, callback);
+  }
+
+  pauseRead() {
+    this.destroySelf();
   }
 
   stop() {

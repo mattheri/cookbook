@@ -95,11 +95,26 @@ class StreamService {
   ) {
     if (!video.ended || !video.paused) {
       ctx.drawImage(video, 0, 0, width, height);
+      this.toGrayScale(ctx.getImageData(0, 0, width, height), ctx);
       this.timeout = setTimeout(
         this.streamMedia.bind(this, video, ctx, width, height),
         this.fps[30]
       );
     }
+  }
+
+  private toGrayScale(image: ImageData, ctx: CanvasRenderingContext2D) {
+    const pixels = image.data;
+
+    for (let i = 0; i < pixels.length; i += 4) {
+      const ligntness =
+        0.2126 * pixels[i] + 0.715 * pixels[i + 1] + 0.0722 * pixels[i + 2];
+      pixels[i] = ligntness;
+      pixels[i + 1] = ligntness;
+      pixels[i + 2] = ligntness;
+    }
+
+    ctx.putImageData(image, 0, 0);
   }
 
   private async createVideo(
