@@ -6,19 +6,31 @@ import { useLayoutEffect, useRef, useState } from "react";
 const Scanner = () => {
   const [isScanning, setIsScanning] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState<any[] | null>(null);
-  const [code, setCode] = useState("");
+  const [products, setProducts] = useState<string[]>([]);
   const barcodeReader = useInjection(BarcodeScannerService);
   const ref = useRef<HTMLDivElement>(null);
 
   const handleScan = (newCode: string) => {
-    console.log(newCode);
-    if (newCode !== code) setCode(newCode);
+    setProducts((prev) => {
+      if (prev.includes(newCode)) {
+        return prev;
+      }
+      return [...prev, newCode];
+    });
+
+    barcodeReader.pauseRead();
+
+    setIsScanning(false);
   };
 
-  barcodeReader.onBarcodeRead(handleScan);
+  const handleScanAnother = () => {
+    setIsScanning(true);
+    barcodeReader.resumeRead();
+  };
 
   useLayoutEffect(() => {
+    barcodeReader.onBarcodeRead(handleScan);
+
     if (ref.current) {
       barcodeReader.read(ref.current);
     }
@@ -35,11 +47,23 @@ const Scanner = () => {
         display={isLoading ? "grid" : "block"}
         placeItems="center"
       ></Box>
-      <code>{code}</code>
-      <Button colorScheme="green" w="100%" disabled={isScanning}>
+      <code>
+        {products.map((product) => (
+          <>
+            <div>{product}</div>
+            <br />
+          </>
+        ))}
+      </code>
+      <Button
+        colorScheme="green"
+        w="100%"
+        disabled={isScanning}
+        onClick={handleScanAnother}
+      >
         Add and scan another
       </Button>
-      <Button w="100%" disabled={!products}>
+      <Button w="100%" disabled={!products.length}>
         Add
       </Button>
     </VStack>

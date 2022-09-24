@@ -16,6 +16,7 @@ class BarcodeScannerService {
 
   private _debugEnabled = process.env.NODE_ENV === "development";
   private _frame: number | null = null;
+  private _isPaused = false;
 
   get debugEnabled() {
     return this._debugEnabled;
@@ -41,6 +42,8 @@ class BarcodeScannerService {
   }
 
   private async scan() {
+    if (this._isPaused) return;
+
     const imageData = await this.canvas.getImageData();
 
     const symbols = await scanImageData(imageData);
@@ -63,6 +66,11 @@ class BarcodeScannerService {
     this._frame = requestAnimationFrame(this.scan.bind(this));
   }
 
+  async resumeRead() {
+    this._isPaused = false;
+    this._frame = requestAnimationFrame(this.scan.bind(this));
+  }
+
   private destroySelf() {
     if (this._frame) cancelAnimationFrame(this._frame);
   }
@@ -72,6 +80,7 @@ class BarcodeScannerService {
   }
 
   pauseRead() {
+    this._isPaused = true;
     this.destroySelf();
   }
 
