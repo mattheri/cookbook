@@ -1,12 +1,5 @@
 import { injectable } from "inversify";
 
-enum DeviceKind {
-  VIDEO_INPUT = "videoinput",
-  AUDIO_INPUT = "audioinput",
-}
-
-type CameraId = { deviceId: string } | { deviceId?: string };
-
 const MAX_WIDTH = 4096;
 const MAX_HEIGHT = 2160;
 const MIN_WIDTH = 1280;
@@ -14,13 +7,7 @@ const MIN_HEIGHT = 720;
 
 @injectable()
 class CameraService {
-  cameraId: CameraId = {};
   stream: MediaStream | null = null;
-
-  constructor() {
-    this.init();
-    this.getCameraId();
-  }
 
   get isSupported() {
     const support =
@@ -67,31 +54,16 @@ class CameraService {
     }
   }
 
-  async getCameraId() {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const camera = devices.find(
-      (device) => device.kind === DeviceKind.VIDEO_INPUT
-    );
-
-    await navigator.mediaDevices.getUserMedia({
-      video: {
-        width: { ideal: MAX_WIDTH },
-        height: { ideal: MAX_HEIGHT },
-      },
-    });
-
-    this.cameraId = camera ? { deviceId: camera.deviceId } : {};
-  }
-
   async stop() {
-    this.stream?.getTracks().forEach((track) => track.stop());
-  }
+    return new Promise((resolve) => {
+      if (!this.stream) return resolve(true);
 
-  init() {
-    navigator.mediaDevices.addEventListener(
-      "devicechange",
-      this.getCameraId.bind(this)
-    );
+      this.stream.getTracks().forEach((track) => track.stop());
+
+      this.stream = null;
+
+      resolve(true);
+    });
   }
 }
 

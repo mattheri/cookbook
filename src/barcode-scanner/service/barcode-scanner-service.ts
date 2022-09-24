@@ -1,14 +1,9 @@
 import { inject, injectable } from "inversify";
-import {
-  scanImageData,
-  getDefaultScanner,
-  ZBarImage,
-  ZBarConfigType,
-  ZBarOrientation,
-} from "@undecaf/zbar-wasm";
-import StreamService from "./stream-service";
 import Pubsub from "common/utils/PubSub";
 import BarcodeAdapter from "./barcode-adapter";
+import { scanImageData, ZBarSymbol } from "@undecaf/zbar-wasm";
+import Scanner from "./scanner";
+import Canvas from "./canvas";
 
 export enum BarcodeScannerEvents {
   BARCODE_SCAN = "BARCODE_SCAN",
@@ -17,66 +12,62 @@ export enum BarcodeScannerEvents {
 @injectable()
 class BarcodeScannerService {
   @inject(BarcodeAdapter) private readonly barcodeAdapter!: BarcodeAdapter;
-  @inject(StreamService) private readonly streamService!: StreamService;
   @inject(Pubsub) private readonly pubsub!: Pubsub<BarcodeScannerEvents>;
+  @inject(Canvas) private readonly canvas!: Canvas;
+  @inject(Scanner) private readonly _scanner!: Scanner;
 
-  timeout: NodeJS.Timeout | null = null;
-  scanning = true;
-  private _scanInterval = 800;
+  private _debugEnabled = process.env.NODE_ENV === "development";
+  private _frame: number | null = null;
 
-  get scanInterval() {
-    return this._scanInterval;
+  get debugEnabled() {
+    return this._debugEnabled;
   }
 
-  set scanInterval(interval: number) {
-    this._scanInterval = interval;
+  set debugEnabled(debugEnabled: boolean) {
+    this._debugEnabled = debugEnabled;
   }
 
-  private sleep() {
-    return new Promise((resolve) => {
-      setTimeout(resolve, this.scanInterval);
-    });
+  private get scanner() {
+    return this._scanner.scannerObject;
+  }
+
+  private debug(symbol: ZBarSymbol) {
+    if (this.canvas.context && this.debugEnabled) {
+      const ctx = this.canvas.context;
+      const width = this.canvas.video?.videoWidth || 1;
+      const height = this.canvas.video?.videoHeight || 1;
+      const lastPoint = symbol.points[symbol.points.length - 1];
+
+      ctx.moveTo(lastPoint.x, lastPoint.y);
+      symbol.points.forEach((point) => ctx.lineTo(point.x, point.y));
+      ctx.lineWidth = Math.max(Math.min(height, width) / 100, 1);
+      ctx.strokeStyle = "#00e00060";
+      ctx.stroke();
+    }
   }
 
   private async scan() {
-    if (
-      !this.streamService.ctx ||
-      !this.streamService.width ||
-      !this.streamService.height
-    )
-      return;
+    const imageData = await this.canvas.getImageData();
 
-    const imageData = this.streamService.ctx.getImageData(
-      0,
-      0,
-      this.streamService.width,
-      this.streamService.height
-    );
-    const res = await scanImageData(imageData);
+    const symbols = await scanImageData(imageData);
 
-    if (res.length) {
-      this.streamService.debugRender(res);
-      const code = res[0].decode();
-      if (this.barcodeAdapter.validateBarcode(code)) {
-        this.pubsub.publish(BarcodeScannerEvents.BARCODE_SCAN, code);
-      }
-    }
+    if (symbols.length)
+      symbols.forEach((symbol) => {
+        this.debug(symbol);
+        console.log(symbol.decode());
+      });
 
-    await this.sleep();
+    this._frame = requestAnimationFrame(this.scan.bind(this));
   }
 
-  async read() {
-    if (!this.scanning) this.scanning = true;
+  async read(target: HTMLElement) {
+    this.canvas.target = target;
 
-    await this.streamService.createStream();
-
-    this.timeout = setInterval(async () => {
-      await this.scan();
-    }, this.scanInterval);
+    this._frame = requestAnimationFrame(this.scan.bind(this));
   }
 
   private destroySelf() {
-    if (this.timeout) clearTimeout(this.timeout);
+    if (this._frame) cancelAnimationFrame(this._frame);
   }
 
   onBarcodeRead(callback: (code: any) => any) {
@@ -88,8 +79,14 @@ class BarcodeScannerService {
   }
 
   stop() {
-    this.streamService.stopStream();
-    this.destroySelf();
+    try {
+      this.destroySelf();
+      this.canvas.stop();
+    } catch (error) {
+      console.error(error);
+
+      this.stop();
+    }
   }
 }
 

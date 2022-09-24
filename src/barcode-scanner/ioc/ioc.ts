@@ -3,14 +3,16 @@ import CameraService from "barcode-scanner/service/camera-service";
 import BarcodeAdapter from "barcode-scanner/service/barcode-adapter";
 import BarcodeValidator from "barcode-scanner/service/barcode-validator";
 import BarcodeScannerService from "barcode-scanner/service/barcode-scanner-service";
-import StreamService from "barcode-scanner/service/stream-service";
+import Scanner from "barcode-scanner/service/scanner";
+import Canvas from "barcode-scanner/service/canvas";
 
 const barcodeScannerIoC = new ContainerModule((bind) => {
   bind(CameraService).toSelf();
   bind(BarcodeAdapter).toSelf();
   bind(BarcodeValidator).toSelf();
   bind(BarcodeScannerService).toSelf();
-  bind(StreamService).toSelf();
+  bind(Scanner).toSelf();
+  bind(Canvas).toSelf();
 });
 
 export default barcodeScannerIoC;

@@ -1,11 +1,5 @@
-import { QuaggaJSResultObject } from "@ericblade/quagga2";
 import { injectable } from "inversify";
 import Barcoder from "barcoder";
-
-export type QuaggaJSDecodedCode =
-  QuaggaJSResultObject["codeResult"]["decodedCodes"][0];
-
-const DEFAULT_ERROR_THRESHOLD = 0.25;
 
 @injectable()
 class BarcodeAdapter {
