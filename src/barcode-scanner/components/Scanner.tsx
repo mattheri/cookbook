@@ -7,8 +7,16 @@ const Scanner = () => {
   const [isScanning, setIsScanning] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState<any[] | null>(null);
+  const [code, setCode] = useState("");
   const barcodeReader = useInjection(BarcodeScannerService);
   const ref = useRef<HTMLDivElement>(null);
+
+  const handleScan = (newCode: string) => {
+    console.log(newCode);
+    if (newCode !== code) setCode(newCode);
+  };
+
+  barcodeReader.onBarcodeRead(handleScan);
 
   useLayoutEffect(() => {
     if (ref.current) {
@@ -27,6 +35,7 @@ const Scanner = () => {
         display={isLoading ? "grid" : "block"}
         placeItems="center"
       ></Box>
+      <code>{code}</code>
       <Button colorScheme="green" w="100%" disabled={isScanning}>
         Add and scan another
       </Button>

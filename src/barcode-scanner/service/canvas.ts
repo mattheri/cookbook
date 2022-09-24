@@ -98,6 +98,11 @@ class Canvas {
       this.canvas = document.createElement("canvas");
       (this.target || document.body).appendChild(this.canvas);
 
+      this.canvas.setAttribute(
+        "style",
+        "position: absolute; top: 0; left: 0; z-index: 1;"
+      );
+
       resolve(true);
     });
   }

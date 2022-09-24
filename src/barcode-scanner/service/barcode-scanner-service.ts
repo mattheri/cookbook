@@ -54,7 +54,7 @@ class BarcodeScannerService {
     if (symbols.length)
       symbols.forEach((symbol) => {
         this.debug(symbol);
-        console.log(symbol.decode());
+        this.pubsub.publish(BarcodeScannerEvents.BARCODE_SCAN, symbol.decode());
       });
 
     this._frame = requestAnimationFrame(this.scan.bind(this));
@@ -62,6 +62,7 @@ class BarcodeScannerService {
 
   async read(target: HTMLElement) {
     this.canvas.target = target;
+    this.debugEnabled = true;
 
     this._frame = requestAnimationFrame(this.scan.bind(this));
   }
