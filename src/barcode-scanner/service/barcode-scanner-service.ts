@@ -2,7 +2,6 @@ import { inject, injectable } from "inversify";
 import Pubsub from "common/utils/PubSub";
 import BarcodeAdapter from "./barcode-adapter";
 import { scanImageData, ZBarSymbol } from "@undecaf/zbar-wasm";
-import Scanner from "./scanner";
 import Canvas from "./canvas";
 
 export enum BarcodeScannerEvents {
@@ -14,7 +13,6 @@ class BarcodeScannerService {
   @inject(BarcodeAdapter) private readonly barcodeAdapter!: BarcodeAdapter;
   @inject(Pubsub) private readonly pubsub!: Pubsub<BarcodeScannerEvents>;
   @inject(Canvas) private readonly canvas!: Canvas;
-  @inject(Scanner) private readonly _scanner!: Scanner;
 
   private _debugEnabled = process.env.NODE_ENV === "development";
   private _frame: number | null = null;
@@ -25,10 +23,6 @@ class BarcodeScannerService {
 
   set debugEnabled(debugEnabled: boolean) {
     this._debugEnabled = debugEnabled;
-  }
-
-  private get scanner() {
-    return this._scanner.scannerObject;
   }
 
   private debug(symbol: ZBarSymbol) {
@@ -54,7 +48,9 @@ class BarcodeScannerService {
     if (symbols.length)
       symbols.forEach((symbol) => {
         this.debug(symbol);
-        this.pubsub.publish(BarcodeScannerEvents.BARCODE_SCAN, symbol.decode());
+        const code = symbol.decode();
+        if (this.barcodeAdapter.validateBarcode(code))
+          this.pubsub.publish(BarcodeScannerEvents.BARCODE_SCAN, code);
       });
 
     this._frame = requestAnimationFrame(this.scan.bind(this));
