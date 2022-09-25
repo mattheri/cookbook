@@ -1,7 +1,8 @@
-import { Box, Button, Spinner, VStack } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 import useInjection from "common/hooks/UseInjection";
 import BarcodeScannerService from "barcode-scanner/service/barcode-scanner-service";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, useEffect } from "react";
+import ScannedItemsTab from "./ScannedItemsTab";
 
 const Scanner = () => {
   const [isScanning, setIsScanning] = useState(true);
@@ -28,6 +29,10 @@ const Scanner = () => {
     barcodeReader.resumeRead();
   };
 
+  const onRemoveCode = (code: string) => {
+    setProducts((prev) => prev.filter((c) => c !== code));
+  };
+
   useLayoutEffect(() => {
     barcodeReader.onBarcodeRead(handleScan);
 
@@ -38,6 +43,12 @@ const Scanner = () => {
     return () => barcodeReader.stop();
   }, [ref]);
 
+  useEffect(() => {
+    if (!products.length && !isScanning) {
+      handleScanAnother();
+    }
+  }, [products]);
+
   return (
     <VStack minH="100%">
       <Box
@@ -47,25 +58,12 @@ const Scanner = () => {
         display={isLoading ? "grid" : "block"}
         placeItems="center"
       ></Box>
-      <code>
-        {products.map((product) => (
-          <>
-            <div>{product}</div>
-            <br />
-          </>
-        ))}
-      </code>
-      <Button
-        colorScheme="green"
-        w="100%"
-        disabled={isScanning}
-        onClick={handleScanAnother}
-      >
-        Add and scan another
-      </Button>
-      <Button w="100%" disabled={!products.length}>
-        Add
-      </Button>
+      <ScannedItemsTab
+        codes={products}
+        onScanAnother={handleScanAnother}
+        isScanning={isScanning}
+        onRemoveCode={onRemoveCode}
+      />
     </VStack>
   );
 };

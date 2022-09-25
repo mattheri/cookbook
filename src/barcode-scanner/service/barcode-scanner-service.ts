@@ -1,8 +1,14 @@
 import { inject, injectable } from "inversify";
 import Pubsub from "common/utils/PubSub";
 import BarcodeAdapter from "./barcode-adapter";
-import { scanImageData, ZBarSymbol } from "@undecaf/zbar-wasm";
+import {
+  scanImageData,
+  ZBarSymbol,
+  ZBarConfigType,
+  ZBarSymbolType,
+} from "@undecaf/zbar-wasm";
 import Canvas from "./canvas";
+import Scanner from "./scanner";
 
 export enum BarcodeScannerEvents {
   BARCODE_SCAN = "BARCODE_SCAN",
@@ -13,10 +19,15 @@ class BarcodeScannerService {
   @inject(BarcodeAdapter) private readonly barcodeAdapter!: BarcodeAdapter;
   @inject(Pubsub) private readonly pubsub!: Pubsub<BarcodeScannerEvents>;
   @inject(Canvas) private readonly canvas!: Canvas;
+  @inject(Scanner) private readonly _scanner!: Scanner;
 
   private _debugEnabled = process.env.NODE_ENV === "development";
   private _frame: number | null = null;
   private _isPaused = false;
+
+  get scanner() {
+    return this._scanner.scannerObject;
+  }
 
   get debugEnabled() {
     return this._debugEnabled;
@@ -24,6 +35,14 @@ class BarcodeScannerService {
 
   set debugEnabled(debugEnabled: boolean) {
     this._debugEnabled = debugEnabled;
+  }
+
+  get paused() {
+    return this._isPaused;
+  }
+
+  private set paused(paused: boolean) {
+    this._isPaused = paused;
   }
 
   private debug(symbol: ZBarSymbol) {
@@ -42,11 +61,11 @@ class BarcodeScannerService {
   }
 
   private async scan() {
-    if (this._isPaused) return;
+    if (this.paused) return;
 
     const imageData = await this.canvas.getImageData();
 
-    const symbols = await scanImageData(imageData);
+    const symbols = await scanImageData(imageData, this.scanner);
 
     if (symbols.length)
       symbols.forEach((symbol) => {
@@ -61,18 +80,21 @@ class BarcodeScannerService {
 
   async read(target: HTMLElement) {
     this.canvas.target = target;
-    this.debugEnabled = true;
-
+    this._scanner.configureScanner([
+      [ZBarSymbolType.ZBAR_NONE, ZBarConfigType.ZBAR_CFG_ENABLE, 0],
+      [ZBarSymbolType.ZBAR_EAN13, ZBarConfigType.ZBAR_CFG_ENABLE, 1],
+    ]);
     this._frame = requestAnimationFrame(this.scan.bind(this));
   }
 
   async resumeRead() {
-    this._isPaused = false;
+    this.paused = false;
     this._frame = requestAnimationFrame(this.scan.bind(this));
   }
 
   private destroySelf() {
     if (this._frame) cancelAnimationFrame(this._frame);
+    if (this.scanner) this._scanner.destroy();
   }
 
   onBarcodeRead(callback: (code: any) => any) {
@@ -80,7 +102,7 @@ class BarcodeScannerService {
   }
 
   pauseRead() {
-    this._isPaused = true;
+    this.paused = true;
     this.destroySelf();
   }
 
