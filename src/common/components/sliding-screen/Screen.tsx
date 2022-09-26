@@ -1,7 +1,10 @@
 import {
+  Button,
   Drawer,
   DrawerBody,
+  DrawerCloseButton,
   DrawerContent,
+  DrawerHeader,
   DrawerOverlay,
   StyleProps,
 } from "@chakra-ui/react";
@@ -36,6 +39,9 @@ const Screen: FC<Props> = ({
     >
       <DrawerOverlay />
       <DrawerContent>
+        <DrawerHeader>
+          <Button onClick={onClose}>X</Button>
+        </DrawerHeader>
         <DrawerBody>{children}</DrawerBody>
       </DrawerContent>
     </Drawer>

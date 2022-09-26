@@ -1,82 +1,84 @@
-import { useState, FC, useRef, useEffect, PropsWithChildren } from "react";
 import {
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
+  useState,
+  FC,
+  PropsWithChildren,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from "react";
+import {
+  Box,
   IconButton,
+  Portal,
+  Flex,
+  BoxProps,
+  FlexProps,
 } from "@chakra-ui/react";
 import { TiArrowSortedUp } from "react-icons/ti";
+import { motion } from "framer-motion";
 
 interface Props extends PropsWithChildren {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const FoldableDrawer: FC<Props> = ({ isOpen, onClose, children }) => {
+const Footer: FC<FlexProps> = ({ children, ...props }) => {
+  return (
+    <Flex as="footer" {...props}>
+      {children}
+    </Flex>
+  );
+};
+
+const Body: FC<BoxProps> = ({ children, ...props }) => {
+  return (
+    <Box as="main" {...props}>
+      {children}
+    </Box>
+  );
+};
+
+const TRANSFORM_VALUES = {
+  OPEN: "translate3d(0, 0, 0)",
+  CLOSED: "translate3d(0, calc(100% + 3rem), 0)",
+  FOLDED: "translate3d(0, calc(100% - 1rem), 0)",
+};
+
+const FoldableDrawer: FC<Props> = ({ isOpen, children }) => {
   const [isFolded, setIsFolded] = useState(false);
-  const [firstUnfold, setFirstUnfold] = useState(true);
-  const drawerRef = useRef<HTMLDivElement>(null);
-  const drawerRefTransform = useRef<string | null>(null);
+  const [transformValue, setTransformValue] = useState(TRANSFORM_VALUES.CLOSED);
 
   const toggleFold = () => setIsFolded(!isFolded);
 
-  const findContainer = (element: HTMLElement | null) => {
-    if (!element) return null;
-
-    let parent = element.parentElement;
-    const className = "chakra-modal__content-container";
-
-    while (parent && !parent.classList.contains(className)) {
-      parent = parent.parentElement;
+  useLayoutEffect(() => {
+    if (isOpen && !isFolded) {
+      setTransformValue(TRANSFORM_VALUES.OPEN);
+    } else if (isOpen && isFolded) {
+      setTransformValue(TRANSFORM_VALUES.FOLDED);
     }
+  }, [isOpen, isFolded]);
 
-    return parent;
-  };
-
-  useEffect(() => {
-    if (drawerRef.current) {
-      const parent = drawerRef.current.parentElement;
-      const container = findContainer(parent);
-
-      if (!parent || !container) return;
-
-      container.style.height = "auto";
-      if (!drawerRefTransform.current)
-        drawerRefTransform.current = parent.style.transform;
-
-      if (isFolded) {
-        parent.style.transform = parent.style.transform.replace(
-          "translateY(0%)",
-          "translateY(var(--chakra-translate-y))"
-        );
-      } else if (!isFolded && !firstUnfold) {
-        parent.style.transform = drawerRefTransform.current;
-      }
-
-      setFirstUnfold(false);
-
-      return () => setFirstUnfold(true);
-    }
-  }, [drawerRef, isFolded, firstUnfold]);
-
-  return (
-    <Drawer
-      placement="bottom"
-      onClose={onClose}
-      isOpen={isOpen}
-      useInert={false}
-      trapFocus={false}
-    >
-      <DrawerContent
-        translateY={isFolded ? "calc(100% - 2rem)" : "0%"}
-        transition="transform ease-in-out 300ms"
+  return isOpen ? (
+    <Portal>
+      <Box
+        position="fixed"
+        bottom="0"
+        style={{
+          transform: transformValue,
+        }}
+        zIndex="9999"
+        backgroundColor="white"
+        width="100%"
+        transition="transform 0.3s ease-in-out"
+        paddingInline="1rem"
+        paddingBlockEnd="1rem"
       >
-        <DrawerHeader
-          ref={drawerRef}
-          borderTopWidth="1px"
+        <Box
+          as="header"
+          position="relative"
           borderTopColor="blackAlpha.100"
+          borderTopWidth="thin"
+          height="1rem"
         >
           <IconButton
             aria-label="fold-menu"
@@ -104,14 +106,14 @@ const FoldableDrawer: FC<Props> = ({ isOpen, onClose, children }) => {
             backgroundColor="white"
             onClick={toggleFold}
           />
-        </DrawerHeader>
+        </Box>
         {children}
-      </DrawerContent>
-    </Drawer>
-  );
+      </Box>
+    </Portal>
+  ) : null;
 };
 
 export default Object.assign(FoldableDrawer, {
-  Footer: DrawerFooter,
-  Body: DrawerBody,
+  Footer: Footer,
+  Body: Body,
 });

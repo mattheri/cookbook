@@ -8,7 +8,7 @@ interface Props {
 
 const SlidingScreen: FC<PropsWithChildren<Props>> = ({ id, children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isCurrentlyOpen, provideContext } = useContext(ModalContext);
+  const { isCurrentlyOpen, provideContext, close } = useContext(ModalContext);
 
   useEffect(() => {
     if (isCurrentlyOpen === id && !isOpen) setIsOpen(true);
@@ -18,7 +18,10 @@ const SlidingScreen: FC<PropsWithChildren<Props>> = ({ id, children }) => {
     };
   }, [isCurrentlyOpen, id, isOpen, provideContext]);
 
-  const closeHandler = () => setIsOpen(false);
+  const closeHandler = () => {
+    setIsOpen(false);
+    close(id);
+  };
 
   return (
     <Screen isOpen={isOpen} onClose={closeHandler}>

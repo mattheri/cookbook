@@ -1,15 +1,5 @@
-import {
-  Button,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  VStack,
-} from "@chakra-ui/react";
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import Form from "common/components/form-inputs/Form";
-import useModal from "common/components/modals/hooks/UseModal";
-import Modal from "common/components/modals/Modal";
 import { CreateProductModalId } from "common/constants/constants";
 import CreateProductForm from "./CreateProductForm";
 import PickProductForm from "./PickProductForm";
@@ -28,8 +18,6 @@ const initialValues = {
 };
 
 const CreateProductModal = () => {
-  const { close } = useModal(CreateProductModalId);
-
   return (
     <SlidingScreen id={CreateProductModalId}>
       <Form
@@ -54,9 +42,6 @@ const CreateProductModal = () => {
             </TabPanel>
           </TabPanels>
         </Tabs>
-        <Button colorScheme="red" onClick={close}>
-          Cancel
-        </Button>
       </Form>
     </SlidingScreen>
   );
