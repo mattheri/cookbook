@@ -20,7 +20,11 @@ const ScannedItemsTab: FC<Props> = ({
   const removeCodeHandler = (code: string) => () => onRemoveCode(code);
 
   return (
-    <FoldableDrawer isOpen={!!codes.length} onClose={onClose}>
+    <FoldableDrawer
+      isOpen={!!codes.length}
+      onClose={onClose}
+      badgeContent={codes.length ? `CODES SCANNED: ${codes.length}` : undefined}
+    >
       <FoldableDrawer.Body>
         {codes.map((code, index) => (
           <Fragment key={index}>

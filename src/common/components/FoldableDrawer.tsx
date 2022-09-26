@@ -13,13 +13,14 @@ import {
   Flex,
   BoxProps,
   FlexProps,
+  Badge,
 } from "@chakra-ui/react";
 import { TiArrowSortedUp } from "react-icons/ti";
-import { motion } from "framer-motion";
 
 interface Props extends PropsWithChildren {
   isOpen: boolean;
   onClose: () => void;
+  badgeContent?: string;
 }
 
 const Footer: FC<FlexProps> = ({ children, ...props }) => {
@@ -44,7 +45,7 @@ const TRANSFORM_VALUES = {
   FOLDED: "translate3d(0, calc(100% - 1rem), 0)",
 };
 
-const FoldableDrawer: FC<Props> = ({ isOpen, children }) => {
+const FoldableDrawer: FC<Props> = ({ isOpen, badgeContent, children }) => {
   const [isFolded, setIsFolded] = useState(false);
   const [transformValue, setTransformValue] = useState(TRANSFORM_VALUES.CLOSED);
 
@@ -106,6 +107,16 @@ const FoldableDrawer: FC<Props> = ({ isOpen, children }) => {
             backgroundColor="white"
             onClick={toggleFold}
           />
+          {badgeContent && (
+            <Badge
+              variant="subtle"
+              position="absolute"
+              right="4rem"
+              top="-.8rem"
+            >
+              {badgeContent}
+            </Badge>
+          )}
         </Box>
         {children}
       </Box>
