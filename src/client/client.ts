@@ -13,9 +13,14 @@ import LoadingCommand from "common/commands/loading-command";
 export interface IClient extends ApolloClient<NormalizedCacheObject> {}
 
 const interceptor = new ApolloLink((operation, forward) => {
-  const loadingCommand = new LoadingCommand();
+  let loadingCommand = { cancel: () => {} };
 
-  return forward(operation).map(data => {
+  const currentContext = operation.getContext();
+  const isUsingLoading: boolean = currentContext.useLoading ?? false;
+
+  if (isUsingLoading) loadingCommand = new LoadingCommand();
+
+  return forward(operation).map((data) => {
     loadingCommand.cancel();
     return data;
   });
@@ -24,9 +29,9 @@ const interceptor = new ApolloLink((operation, forward) => {
 const httpLink = new HttpLink({
   uri: process.env.REACT_APP_GRAPHQL_URL || "",
   headers: {
-    authorization: process.env.REACT_APP_GRAPHQL_TOKEN || ""
-  }
-})
+    authorization: process.env.REACT_APP_GRAPHQL_TOKEN || "",
+  },
+});
 
 @injectable()
 class Client {

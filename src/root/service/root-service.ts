@@ -26,6 +26,9 @@ class RootService {
       variables: {
         user,
       },
+      context: {
+        useLoading: true,
+      },
     });
 
     if (!response.data?.createRoot) return null;
@@ -39,16 +42,16 @@ class RootService {
       variables: {
         user,
       },
+      context: {
+        useLoading: true,
+      },
     });
-
-    console.log(data);
 
     this.store.dispatch(addOrUpdateRoot(data.rootByUser));
   }
 
   async updateRoot(input: RootInput): Promise<void | null | unknown> {
     const root = this.store.root;
-    console.log(root);
 
     const rootInput = this.rootAdapter.toMergedServerRootInput(root, input);
 

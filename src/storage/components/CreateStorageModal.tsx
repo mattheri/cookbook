@@ -33,7 +33,7 @@ const UpdateStorageModal = () => {
   };
 
   const onSubmit = async (values: typeof initialValues) => {
-    await createNewStorage(values);
+    createNewStorage(values);
     close();
   };
 

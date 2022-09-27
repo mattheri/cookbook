@@ -5,7 +5,7 @@ const useDeleteStorage = (storageId: string) => {
   const storageService = useInjection(StorageService);
 
   return async () => {
-    await storageService.deleteStorage(storageId);
+    storageService.deleteStorage(storageId);
   };
 };
 

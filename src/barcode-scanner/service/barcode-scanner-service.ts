@@ -103,7 +103,7 @@ class BarcodeScannerService {
 
   pauseRead() {
     this.paused = true;
-    this.destroySelf();
+    if (this._frame) cancelAnimationFrame(this._frame);
   }
 
   stop() {

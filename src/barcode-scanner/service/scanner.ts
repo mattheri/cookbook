@@ -4,16 +4,20 @@ import {
   ZBarConfigType,
   ZBarSymbolType,
 } from "@undecaf/zbar-wasm";
+import { Observable } from "rxjs";
 
 type Config = [ZBarSymbolType, ZBarConfigType, number][];
 
 @injectable()
 class Scanner {
   private _scanner: ZBarScanner | undefined;
+  private _createScanner = new Observable<ZBarScanner>((subscriber) => {
+    ZBarScanner.create().then((scanner) => subscriber.next(scanner));
+  });
 
   get scannerObject() {
     if (!this._scanner) {
-      ZBarScanner.create().then((scanner) => (this._scanner = scanner));
+      this._createScanner.subscribe((scanner) => (this._scanner = scanner));
     }
 
     return this._scanner!;

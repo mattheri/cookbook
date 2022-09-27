@@ -13,6 +13,7 @@ import {
   ChangeEventHandler,
   FC,
   InputHTMLAttributes,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -47,6 +48,7 @@ export interface FileWithSrc extends File {
 const FileInput: FC<Props> = ({
   id,
   src,
+  name,
   acceptedFiles,
   compressImage = true,
   compressQuality = 60,
@@ -56,7 +58,7 @@ const FileInput: FC<Props> = ({
 
   const inputRef = useRef<HTMLInputElement>(null);
   const imageSrcRef = useRef<string | undefined>(src);
-  const { $error, setValue, setError } = useInput(id);
+  const { $error, setValue, setError, $value } = useInput(id);
   const t = useTranslate();
 
   const getFileTypes = () => {
@@ -84,7 +86,6 @@ const FileInput: FC<Props> = ({
 
   const onChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     const inputFiles = event.target.files;
-    console.log(inputFiles);
 
     if (!inputFiles || inputFiles.length === 0) return;
 
@@ -124,6 +125,12 @@ const FileInput: FC<Props> = ({
 
     setValue({ url, name });
   };
+
+  useEffect(() => {
+    if (src && ($value.url !== src || $value.name !== name)) {
+      setValue({ url: src, name: name });
+    }
+  }, [src, name]);
 
   return (
     <FormControl pos="relative" isInvalid={!!(image && $error)}>

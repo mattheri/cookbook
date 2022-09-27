@@ -1,4 +1,5 @@
 import Client, { IClient } from "client/client";
+import FakeApiObject from "client/fake-api-object";
 import { inject, injectable } from "inversify";
 import { addOrUpdateRoot, updateStorage } from "root/store/rootSlice";
 import CREATE_STORAGE_ROOT_MUTATION from "storage/infra/CreateStorageRootMutation";
@@ -11,21 +12,37 @@ import {
   UpdateStorageMutationResponse,
 } from "storage/storage";
 import StoreService from "store/service/store-service";
+import { Storage } from "storage/storage";
 
 const DEFAULT_NEW_STORAGE = {
-  name: "",
+  _id: "",
+  name: "Empty",
   shared: false,
+  storageImage: {
+    url: null,
+    name: null,
+  },
 };
 
 @injectable()
 class StorageService {
   @inject(Client) private readonly client!: IClient;
   @inject(StoreService) private readonly store!: StoreService;
+  @inject(FakeApiObject) private readonly fakeApiObject!: FakeApiObject;
 
   public async createNewStorage(input?: StorageDTO) {
     const rootId = this.store.root._id;
 
     if (!rootId) return null;
+
+    const serverDispatch = this.store.optimisticServerStateDispatch(
+      addOrUpdateRoot,
+      this.createFakeRootState([
+        ...this.store.root.storages.concat([
+          this.fakeApiObject.createFakeApiObject(input || DEFAULT_NEW_STORAGE),
+        ]),
+      ])
+    );
 
     const response =
       await this.client.mutate<CreateStorageAddToRootMutationResponse>({
@@ -38,13 +55,20 @@ class StorageService {
 
     if (!response.data) return null;
 
-    this.store.dispatch(addOrUpdateRoot(response.data.addStorageRoot));
+    serverDispatch(response.data?.addStorageRoot);
   }
 
   public async deleteStorage(storageId: string) {
     const rootId = this.store.root._id;
 
     if (!rootId) return null;
+
+    const serverDispatch = this.store.optimisticServerStateDispatch(
+      addOrUpdateRoot,
+      this.createFakeRootState(
+        this.store.root.storages.filter((s) => s._id !== storageId)
+      )
+    );
 
     const response = await this.client.mutate<RemoveStorageFromRoot>({
       mutation: REMOVE_STORAGE_FROM_ROOT,
@@ -56,13 +80,18 @@ class StorageService {
 
     if (!response.data) return null;
 
-    this.store.dispatch(addOrUpdateRoot(response.data?.removeStorageRoot));
+    serverDispatch(response.data?.removeStorageRoot);
   }
 
   public async updateStorage(storageId: string, input: StorageDTO) {
     const rootId = this.store.root._id;
 
     if (!rootId) return null;
+
+    const serverDispatch = this.store.optimisticServerStateDispatch(
+      updateStorage,
+      this.createNewStorageWithOptimisticState(storageId, input)
+    );
 
     const response = await this.client.mutate<UpdateStorageMutationResponse>({
       mutation: EDIT_STORAGE_MUTATION,
@@ -74,7 +103,23 @@ class StorageService {
 
     if (!response.data) return null;
 
-    this.store.dispatch(updateStorage(response.data?.updateStorage));
+    serverDispatch(response.data?.updateStorage);
+  }
+
+  private createFakeRootState(storages: Storage[]) {
+    return {
+      ...this.store.root,
+      storages: storages,
+    };
+  }
+
+  private createNewStorageWithOptimisticState(id: string, input: StorageDTO) {
+    const storage = this.store.storages.find((s) => s._id === id)!;
+
+    return {
+      ...storage,
+      ...input,
+    };
   }
 }
 

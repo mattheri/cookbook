@@ -27,14 +27,13 @@ const EditStorageModal = () => {
   const storageService = useInjection(StorageService);
 
   useEffect(() => {
-    console.log(currentContext);
     if (Object.keys(currentContext).length) setStorage(currentContext);
   }, [currentContext]);
 
   const onSubmit = async (values: typeof storage) => {
     if (!storage._id) return;
 
-    await storageService.updateStorage(storage._id, values);
+    storageService.updateStorage(storage._id, values);
     close();
   };
 
@@ -64,6 +63,7 @@ const EditStorageModal = () => {
             <Form.File
               id="storageImage"
               src={storage.storageImage?.url || ""}
+              name={storage.storageImage?.name || ""}
             />
           </VStack>
         </Modal.Body>
