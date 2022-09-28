@@ -2,7 +2,7 @@ import { AppEvents } from "app/service/app-service";
 import AuthService from "auth/service/auth-service";
 import useInjection from "common/hooks/UseInjection";
 import { useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import RootService from "root/service/root-service";
 import routes from "routes/routes";
 
@@ -19,6 +19,7 @@ const useRedirectOnAuthStateChange = () => {
     async (userId: string) => await root.queryRoot(userId),
     [root]
   );
+  const location = useLocation();
 
   useEffect(() => {
     auth.pubsub.subscribe(AppEvents.NEW_SIGN_IN, createRoot);
@@ -27,7 +28,8 @@ const useRedirectOnAuthStateChange = () => {
     auth.onAuthStateChange((user) => {
       if (user) {
         auth.pubsub.publish(AppEvents.SIGN_IN, user.uid);
-        navigate(routes.storage.main);
+        if (location.pathname === routes.login || location.pathname === "/")
+          navigate(routes.storage.main);
       } else navigate(routes.login);
     });
   }, [auth, createRoot, queryRoot, navigate]);

@@ -61,7 +61,7 @@ class BarcodeScannerService {
   }
 
   private async scan() {
-    if (this.paused) return;
+    if (this.paused || !this.scanner) return;
 
     const imageData = await this.canvas.getImageData();
 
@@ -103,7 +103,7 @@ class BarcodeScannerService {
 
   pauseRead() {
     this.paused = true;
-    if (this._frame) cancelAnimationFrame(this._frame);
+    this.destroySelf();
   }
 
   stop() {

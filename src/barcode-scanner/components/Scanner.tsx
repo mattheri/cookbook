@@ -1,17 +1,52 @@
-import { Box, VStack } from "@chakra-ui/react";
+import { Box, Button, VStack } from "@chakra-ui/react";
 import useInjection from "common/hooks/UseInjection";
 import BarcodeScannerService from "barcode-scanner/service/barcode-scanner-service";
-import { useLayoutEffect, useRef, useState, useEffect } from "react";
-import ScannedItemsTab from "./ScannedItemsTab";
+import { useLayoutEffect, useRef, useState, useEffect, FC, lazy } from "react";
+import SuspenseWithLoading from "common/components/SuspenseWithLoading";
 
-const Scanner = () => {
+const ScannedItemsTab = lazy(
+  () => import("barcode-scanner/components/ScannedItemsTab")
+);
+
+interface Props {
+  onScan?: (code: string) => void;
+  useCodeDrawer?: boolean;
+}
+
+const Scanner: FC<Props> = ({ onScan, useCodeDrawer = true }) => {
   const [isScanning, setIsScanning] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState<string[]>([]);
   const barcodeReader = useInjection(BarcodeScannerService);
   const ref = useRef<HTMLDivElement>(null);
 
+  const resume = () => {
+    setIsScanning(true);
+    barcodeReader.resumeRead();
+  };
+
+  const pause = () => {
+    setIsScanning(false);
+    barcodeReader.pauseRead();
+  };
+
+  const start = (target: HTMLElement) => {
+    setIsLoading(true);
+    barcodeReader.read(target);
+  };
+
+  const stop = () => {
+    setIsLoading(false);
+    barcodeReader.stop();
+  };
+
+  const controlRead = () => {
+    isScanning ? pause() : resume();
+  };
+
   const handleScan = (newCode: string) => {
+    if (onScan) onScan(newCode);
+
     setProducts((prev) => {
       if (prev.includes(newCode)) {
         return prev;
@@ -19,14 +54,7 @@ const Scanner = () => {
       return [...prev, newCode];
     });
 
-    barcodeReader.pauseRead();
-
-    setIsScanning(false);
-  };
-
-  const handleScanAnother = () => {
-    setIsScanning(true);
-    barcodeReader.resumeRead();
+    pause();
   };
 
   const onRemoveCode = (code: string) => {
@@ -36,16 +64,14 @@ const Scanner = () => {
   useLayoutEffect(() => {
     barcodeReader.onBarcodeRead(handleScan);
 
-    if (ref.current) {
-      barcodeReader.read(ref.current);
-    }
+    if (ref.current) start(ref.current);
 
-    return () => barcodeReader.stop();
+    return () => stop();
   }, [ref]);
 
   useEffect(() => {
     if (!products.length && !isScanning) {
-      handleScanAnother();
+      resume();
     }
   }, [products]);
 
@@ -57,13 +83,27 @@ const Scanner = () => {
         pos="relative"
         display={isLoading ? "grid" : "block"}
         placeItems="center"
-      ></Box>
-      <ScannedItemsTab
-        codes={products}
-        onScanAnother={handleScanAnother}
-        isScanning={isScanning}
-        onRemoveCode={onRemoveCode}
-      />
+      >
+        <Button
+          onClick={controlRead}
+          position="absolute"
+          top="1rem"
+          right="2rem"
+          zIndex="2"
+        >
+          {isScanning ? "Stop scan" : "Start scan"}
+        </Button>
+      </Box>
+      {useCodeDrawer && (
+        <SuspenseWithLoading>
+          <ScannedItemsTab
+            codes={products}
+            onScanAnother={resume}
+            isScanning={isScanning}
+            onRemoveCode={onRemoveCode}
+          />
+        </SuspenseWithLoading>
+      )}
     </VStack>
   );
 };

@@ -4,7 +4,7 @@ import {
   BARCODE_LOOKUP_HOST,
   BARCODE_LOOKUP_KEY,
 } from "product/constants";
-import { Product, ProductAPIResponse, ProductDTO } from "product/product";
+import { ProductAPIResponse } from "product/product";
 import { inject, injectable } from "inversify";
 import ProductAdapter from "./product-adapter";
 import { AxiosResponse } from "axios";

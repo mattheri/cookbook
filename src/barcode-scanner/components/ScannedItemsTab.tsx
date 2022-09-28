@@ -25,7 +25,7 @@ const ScannedItemsTab: FC<Props> = ({
       onClose={onClose}
       badgeContent={codes.length ? `CODES SCANNED: ${codes.length}` : undefined}
     >
-      <FoldableDrawer.Body>
+      <FoldableDrawer.Body display="flex" gap="0.5rem" flexWrap="wrap">
         {codes.map((code, index) => (
           <Fragment key={index}>
             <Tag size="lg" variant="solid" colorScheme="green" mr="1" mb="1">
