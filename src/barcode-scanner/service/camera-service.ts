@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { BehaviorSubject } from "rxjs";
 
 const MAX_WIDTH = 4096;
 const MAX_HEIGHT = 2160;
@@ -7,7 +8,8 @@ const MIN_HEIGHT = 720;
 
 @injectable()
 class CameraService {
-  stream: MediaStream | null = null;
+  stream = new BehaviorSubject<MediaStream | null>(null);
+  canUseTorch: boolean = false;
 
   get isSupported() {
     const support =
@@ -43,24 +45,24 @@ class CameraService {
   }
 
   async activateCamera() {
-    try {
-      this.stream = await navigator.mediaDevices.getUserMedia({
+    this.stream.next(
+      await navigator.mediaDevices.getUserMedia({
         video: this.videoConstraints(await this.getDeviceId()),
-      });
-    } catch (e) {
-      const error = e as Error;
+      })
+    );
 
-      console.error(error);
-    }
+    return this.stream.asObservable();
   }
 
   async stop() {
     return new Promise((resolve) => {
       if (!this.stream) return resolve(true);
 
-      this.stream.getTracks().forEach((track) => track.stop());
+      if (this.stream.value) {
+        this.stream.value.getTracks().forEach((track) => track.stop());
+      }
 
-      this.stream = null;
+      this.stream.next(null);
 
       resolve(true);
     });

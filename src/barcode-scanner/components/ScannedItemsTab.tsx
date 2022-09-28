@@ -1,6 +1,8 @@
 import { FC, Fragment } from "react";
 import { useDisclosure, Button, Tag, TagCloseButton } from "@chakra-ui/react";
 import FoldableDrawer from "common/components/FoldableDrawer";
+import useTranslate from "common/hooks/UseTranslate";
+import { namespace } from "barcode-scanner/i18n/en";
 
 interface Props {
   codes: string[];
@@ -16,6 +18,7 @@ const ScannedItemsTab: FC<Props> = ({
   onRemoveCode,
 }) => {
   const { onClose } = useDisclosure();
+  const t = useTranslate(namespace);
 
   const removeCodeHandler = (code: string) => () => onRemoveCode(code);
 
@@ -23,7 +26,9 @@ const ScannedItemsTab: FC<Props> = ({
     <FoldableDrawer
       isOpen={!!codes.length}
       onClose={onClose}
-      badgeContent={codes.length ? `CODES SCANNED: ${codes.length}` : undefined}
+      badgeContent={
+        codes.length ? t("codes", { count: codes.length }) : undefined
+      }
     >
       <FoldableDrawer.Body display="flex" gap="0.5rem" flexWrap="wrap">
         {codes.map((code, index) => (
@@ -42,10 +47,10 @@ const ScannedItemsTab: FC<Props> = ({
           disabled={isScanning}
           onClick={onScanAnother}
         >
-          Scan another
+          {t("scanAnother")}
         </Button>
         <Button w="100%" disabled={!codes.length}>
-          Add
+          {t("save")}
         </Button>
       </FoldableDrawer.Footer>
     </FoldableDrawer>

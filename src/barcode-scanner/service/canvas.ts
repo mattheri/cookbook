@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify";
 import CameraService from "./camera-service";
+import { BehaviorSubject } from "rxjs";
 
 type IOffscreenCanvas = HTMLCanvasElement;
 
@@ -16,6 +17,9 @@ class Canvas {
   };
   private _context: CanvasRenderingContext2D | null = null;
   private _frame: number | null = null;
+
+  private _imageLoaded = new BehaviorSubject<boolean>(false);
+  public $imageLoaded = this._imageLoaded.asObservable();
 
   private get canvas() {
     return this._canvas;
@@ -69,12 +73,10 @@ class Canvas {
   }
 
   private async stream() {
-    while (!this.cameraService.stream) {
-      await this.cameraService.activateCamera();
-    }
-
-    this.video = await this.injectVideo();
-    this.video.srcObject = this.cameraService.stream;
+    (await this.cameraService.activateCamera()).subscribe(async (stream) => {
+      this.video = await this.injectVideo();
+      this.video.srcObject = stream;
+    });
   }
 
   private async sleep(ms: number = 500) {
@@ -135,6 +137,7 @@ class Canvas {
   async getImageData() {
     if (!this.video || !this.context) {
       this.context = await this.get2dContext();
+      this._imageLoaded.next(true);
     }
 
     this.loop();

@@ -9,6 +9,7 @@ import {
 } from "@undecaf/zbar-wasm";
 import Canvas from "./canvas";
 import Scanner from "./scanner";
+import { BehaviorSubject } from "rxjs";
 
 export enum BarcodeScannerEvents {
   BARCODE_SCAN = "BARCODE_SCAN",
@@ -24,6 +25,9 @@ class BarcodeScannerService {
   private _debugEnabled = process.env.NODE_ENV === "development";
   private _frame: number | null = null;
   private _isPaused = false;
+
+  private _isLoading = new BehaviorSubject<boolean>(true);
+  public $isLoading = this._isLoading.asObservable();
 
   get scanner() {
     return this._scanner.scannerObject;
@@ -67,13 +71,14 @@ class BarcodeScannerService {
 
     const symbols = await scanImageData(imageData, this.scanner);
 
-    if (symbols.length)
+    if (symbols.length) {
       symbols.forEach((symbol) => {
         this.debug(symbol);
         const code = symbol.decode();
         if (this.barcodeAdapter.validateBarcode(code))
           this.pubsub.publish(BarcodeScannerEvents.BARCODE_SCAN, code);
       });
+    }
 
     this._frame = requestAnimationFrame(this.scan.bind(this));
   }
@@ -85,6 +90,9 @@ class BarcodeScannerService {
       [ZBarSymbolType.ZBAR_EAN13, ZBarConfigType.ZBAR_CFG_ENABLE, 1],
     ]);
     this._frame = requestAnimationFrame(this.scan.bind(this));
+    this.canvas.$imageLoaded.subscribe((loaded) => {
+      this._isLoading.next(!loaded);
+    });
   }
 
   async resumeRead() {

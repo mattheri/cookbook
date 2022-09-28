@@ -1,0 +1,8 @@
+{
+  "scan": "Scan",
+  "pause": "Pause",
+  "resume": "Resume",
+  "codes": "{{count}} scanned codes",
+  "scanAnother": "Scan another code",
+  "save": "Save"
+}

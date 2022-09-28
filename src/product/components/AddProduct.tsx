@@ -10,7 +10,7 @@ const AddProduct = () => {
     <Portal>
       <Box
         zIndex="2"
-        pos="absolute"
+        pos="fixed"
         bottom="1rem"
         right="1rem"
         height="5rem"
