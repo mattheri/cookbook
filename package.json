@@ -14,6 +14,7 @@
     "@undecaf/zbar-wasm": "^0.9.11",
     "axios": "^0.27.2",
     "barcoder": "^2.0.1",
+    "browser-image-compression": "^2.0.0",
     "compromise": "^14.5.0",
     "convert-units": "^2.3.4",
     "firebase": "^9.9.0",

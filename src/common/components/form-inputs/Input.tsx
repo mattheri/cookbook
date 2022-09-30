@@ -7,6 +7,7 @@ import {
 } from "@chakra-ui/react";
 import useInput from "common/hooks/UseInput";
 import { FC } from "react";
+import Show from "../Show";
 
 interface Props extends InputProps {
   id: string;
@@ -18,11 +19,13 @@ const Input: FC<Props> = ({ id, label, ...rest }) => {
 
   return (
     <FormControl isInvalid={!!$error && $touched}>
-      {label ? <FormLabel htmlFor={id}>{label}</FormLabel> : null}
+      <Show condition={!!label}>
+        <FormLabel htmlFor={id}>{label}</FormLabel>
+      </Show>
       <_Input id={id} {...field} {...rest} value={$value} />
-      {$touched && $error ? (
+      <Show condition={!!($touched && $error)}>
         <FormErrorMessage>{$error}</FormErrorMessage>
-      ) : null}
+      </Show>
     </FormControl>
   );
 };

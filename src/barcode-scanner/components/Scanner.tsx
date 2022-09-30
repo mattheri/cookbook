@@ -5,6 +5,7 @@ import { useLayoutEffect, useRef, useState, useEffect, FC, lazy } from "react";
 import SuspenseWithLoading from "common/components/SuspenseWithLoading";
 import useTranslate from "common/hooks/UseTranslate";
 import { namespace } from "barcode-scanner/i18n/en";
+import LoadingAnimation from "common/components/LoadingAnimation";
 
 const ScannedItemsTab = lazy(
   () => import("barcode-scanner/components/ScannedItemsTab")
@@ -94,15 +95,13 @@ const Scanner: FC<Props> = ({ onScan, useCodeDrawer = true }) => {
         display="grid"
         placeItems="center"
       >
-        {isLoading && (
-          <Spinner
-            position="absolute"
-            top="50%"
-            left="50%"
-            transform="translate(-50%, -50%)"
-          />
-        )}
-        {!isLoading && (
+        <LoadingAnimation
+          isLoading={isLoading}
+          pos="absolute"
+          top="50%"
+          left="50%"
+          transform="translate(-50%, -50%)"
+        >
           <Button
             onClick={controlRead}
             position="absolute"
@@ -112,7 +111,7 @@ const Scanner: FC<Props> = ({ onScan, useCodeDrawer = true }) => {
           >
             {t(isScanning ? "pause" : "resume")}
           </Button>
-        )}
+        </LoadingAnimation>
       </Box>
       {useCodeDrawer && (
         <SuspenseWithLoading>

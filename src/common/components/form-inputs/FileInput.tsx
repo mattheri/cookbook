@@ -6,19 +6,20 @@ import {
   SimpleGrid,
   VStack,
 } from "@chakra-ui/react";
+import useInjection from "common/hooks/UseInjection";
 import useInput from "common/hooks/UseInput";
 import useTranslate from "common/hooks/UseTranslate";
-import { useField } from "formik";
+import ImageCompression from "common/utils/ImageCompression";
 import {
   ChangeEventHandler,
   FC,
   InputHTMLAttributes,
-  useEffect,
   useRef,
   useState,
 } from "react";
 import { MdFileDownload } from "react-icons/md";
 import PreviewImage from "../PreviewImage";
+import Show from "../Show";
 
 type FileTypes =
   | "image/apng"
@@ -45,21 +46,13 @@ export interface FileWithSrc extends File {
   src?: string;
 }
 
-const FileInput: FC<Props> = ({
-  id,
-  src,
-  name,
-  acceptedFiles,
-  compressImage = true,
-  compressQuality = 60,
-  fileSizeThreshold = 10000,
-}) => {
-  const [image, setImage] = useState<File | null>(null);
+const FileInput: FC<Props> = ({ id, src, acceptedFiles }) => {
+  const [isLoading, setIsLoading] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const imageSrcRef = useRef<string | undefined>(src);
   const { $error, setValue, setError, $value } = useInput(id);
   const t = useTranslate();
+  const imageCompressor = useInjection(ImageCompression);
 
   const getFileTypes = () => {
     if (Array.isArray(acceptedFiles)) {
@@ -84,31 +77,9 @@ const FileInput: FC<Props> = ({
     return true;
   };
 
-  const onChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    const inputFiles = event.target.files;
-
-    if (!inputFiles || inputFiles.length === 0) return;
-
-    for (const file of inputFiles) {
-      setImage(file);
-    }
-
-    if (!isFileValid(inputFiles.item(0))) {
-      setError(t("inputs.errors.file.invalidFile", { type: getFileTypes() }));
-    }
-  };
-
-  const removeImage = () => {
-    if (!inputRef.current) return;
-    inputRef.current.value = "";
-
-    setImage(null);
-    setValue(null);
-
-    if (imageSrcRef.current) imageSrcRef.current = undefined;
-  };
-
   const onImageReady = async (file: File) => {
+    setIsLoading(false);
+
     const toDataURL = (): Promise<string> => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -126,14 +97,33 @@ const FileInput: FC<Props> = ({
     setValue({ url, name });
   };
 
-  useEffect(() => {
-    if (src && ($value.url !== src || $value.name !== name)) {
-      setValue({ url: src, name: name });
+  const onChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const inputFiles = event.target.files;
+    setIsLoading(true);
+
+    if (!inputFiles || inputFiles.length === 0) return;
+
+    if (!isFileValid(inputFiles.item(0))) {
+      setError(t("inputs.errors.file.invalidFile", { type: getFileTypes() }));
+
+      return;
     }
-  }, [src, name]);
+
+    imageCompressor.compress(inputFiles[0]).subscribe((file) => {
+      if (!file) return;
+
+      onImageReady(file);
+    });
+  };
+
+  const removeImage = () => {
+    if (!inputRef.current) return;
+    inputRef.current.value = "";
+    setValue(null);
+  };
 
   return (
-    <FormControl pos="relative" isInvalid={!!(image && $error)}>
+    <FormControl pos="relative" isInvalid={!!($value?.src && $error)}>
       <VStack>
         <Button
           as="label"
@@ -145,18 +135,14 @@ const FileInput: FC<Props> = ({
           {t("addImage")}
         </Button>
         <SimpleGrid minChildWidth="8rem" w="100%">
-          {!$error ? (
-            <PreviewImage
-              file={image || imageSrcRef.current}
-              onRemove={removeImage}
-              onFileCompressed={onImageReady}
-              compressImage={compressImage}
-              compressQuality={compressQuality}
-              fileSizeThreshold={fileSizeThreshold}
-            />
-          ) : (
+          <PreviewImage
+            file={$value?.url}
+            onRemove={removeImage}
+            isLoading={isLoading}
+          />
+          <Show condition={!!$error}>
             <FormErrorMessage>{$error}</FormErrorMessage>
-          )}
+          </Show>
         </SimpleGrid>
       </VStack>
       <Input

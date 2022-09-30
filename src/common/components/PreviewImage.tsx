@@ -1,28 +1,16 @@
-import { Box, IconButton, Image, Spinner } from "@chakra-ui/react";
-import { FC, useEffect, useRef, useState } from "react";
+import { Box, IconButton, Image } from "@chakra-ui/react";
+import { FC } from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import Hoverable from "./hoverable";
-import PreviewImageCompressor from "./PreviewImageCompressor";
+import LoadingAnimation from "./LoadingAnimation";
 
 interface Props {
   onRemove: () => void;
-  file?: File | string;
-  onFileCompressed: (file: File) => void;
-  fileSizeThreshold?: number;
-  compressQuality?: number;
-  compressImage?: boolean;
+  isLoading: boolean;
+  file?: string;
 }
 
-const PreviewImage: FC<Props> = ({
-  file,
-  onRemove,
-  onFileCompressed,
-  fileSizeThreshold,
-  compressQuality,
-  compressImage = true,
-}) => {
-  if (!file) return null;
-
+const PreviewImage: FC<Props> = ({ file, onRemove, isLoading }) => {
   return (
     <Hoverable
       position={{ right: 0, top: 0, transform: "translateX(-3rem)" }}
@@ -47,17 +35,10 @@ const PreviewImage: FC<Props> = ({
             variant="ghost"
           />
         </Hoverable.Action>
-        {typeof file === "string" ? (
-          <Image src={file} />
-        ) : (
-          <PreviewImageCompressor
-            file={file}
-            fileSizeThreshold={fileSizeThreshold}
-            onFileCompressed={onFileCompressed}
-            compressImage={compressImage}
-            compressQuality={compressQuality}
-          />
-        )}
+
+        <LoadingAnimation isLoading={isLoading}>
+          <Image maxW="80%" src={file} />
+        </LoadingAnimation>
       </Box>
     </Hoverable>
   );

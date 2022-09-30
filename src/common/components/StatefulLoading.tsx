@@ -27,7 +27,7 @@ const StatefulLoading = () => {
 
   return shouldMount ? (
     <Portal appendToParentPortal={false}>
-      <Loading top={0} />
+      <Loading top={0} zIndex="9999" />
     </Portal>
   ) : null;
 };
